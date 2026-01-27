@@ -742,6 +742,9 @@ body.is-loading #game-container {
 </style>
 </head>
 <body>
+  <audio id="bg-music" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
   <div id="loading-screen">
   <div class="loader-content">
     <div class="spinner"></div>
@@ -893,6 +896,20 @@ const BestScores = {
 };
 
 // ==================== SCREEN NAVIGATION ====================
+// Add this at the start of your script
+window.addEventListener('load', function() {
+  const loader = document.getElementById('loading-screen');
+  const progress = document.getElementById('loading-progress');
+  
+  progress.style.width = "100%";
+  
+  setTimeout(() => {
+    loader.style.opacity = '0';
+    setTimeout(() => {
+      loader.style.display = 'none';
+    }, 500);
+  }, 1000);
+});
 function showWelcome() {
   document.getElementById('welcome-screen').classList.remove('hidden');
   document.getElementById('scores-screen').classList.remove('show');
@@ -927,6 +944,25 @@ function exitGame() {
     window.close();
     setTimeout(() => alert('Veuillez fermer cette fenêtre manuellement.'), 100);
   }
+}
+function showGame() {
+  // 1. Visual Transitions
+  document.getElementById('welcome-screen').classList.add('hidden');
+  document.getElementById('scores-screen').classList.remove('show');
+  document.getElementById('game-container').classList.add('active');
+  document.getElementById('difficulty-indicator').style.display = 'block';
+  
+  // 2. Audio Logic (Fail-safe)
+  const music = document.getElementById('bg-music');
+  if (music) {
+    music.volume = 0.5;
+    music.play().catch(error => {
+      console.log("Music blocked by browser. It will start on next interaction.");
+    });
+  }
+
+  // 3. Start Game Logic
+  startGame(); 
 }
 
 // ==================== GAME CONFIG ====================
@@ -972,6 +1008,7 @@ let gameState = {
 
 // ==================== AUDIO SYSTEM ====================
 const AudioSystem = {
+  volume :1,
   context: null,
   enabled: false,
   unlocked: false,
@@ -989,7 +1026,7 @@ const AudioSystem = {
     this.context.resume().then(() => { this.unlocked = true; });
   },
   
-  play(freq, duration, type = 'sine', volume = 0.2) {
+  play(freq, duration, type = 'sine', volume = 1) {
     if (!this.enabled || !this.unlocked) return;
     try {
       const osc = this.context.createOscillator();
@@ -1008,7 +1045,7 @@ const AudioSystem = {
   success() { this.play(523.25, 0.08); setTimeout(() => this.play(659.25, 0.12), 80); },
   error() { this.play(180, 0.15, 'sawtooth', 0.15); },
   combo() { this.play(880, 0.08); setTimeout(() => this.play(1046.5, 0.08), 60); },
-  warning() { this.play(300, 0.1, 'square', 0.15); }
+  warning() { this.play(300, 0.1, 'square', 0.98); }
 };
 
 // ==================== UI ELEMENTS ====================
@@ -1215,6 +1252,7 @@ function correctItem() {
   if (gameState.currentOrderIndex >= gameState.currentOrder.length) completeOrder();
   else {
     AudioSystem.success();
+    AudioSystem.combo();
     flashScreen('green');
   }
 }
@@ -1230,7 +1268,7 @@ function wrongOrder() {
     showFloatingText('🧐 INACCEPTABLE!', '#ff0000');
   }
   
-  AudioSystem.error();
+  AudioSystem.warning();
   flashScreen('red');
   showFloatingText(`❌ ERREUR! -${timePenalty}s`, '#ff0000');
   document.body.classList.add('shake');
@@ -1480,6 +1518,7 @@ window.addEventListener('load', function() {
     }, 500);
   }, 800); // Small delay so people can actually see the cool loader
 });
+
 
 // ==================== INITIALIZATION ====================
 BestScores.init();
