@@ -942,11 +942,24 @@ function showScores() {
 }
 
 function showGame() {
-  document.getElementById('welcome-screen').classList.add('hidden');
-  document.getElementById('scores-screen').classList.remove('show');
-  document.getElementById('game-container').classList.add('active');
-  document.getElementById('difficulty-indicator').style.display = 'block';
-  startGame();
+    // 1. Force the audio to "unlock" on mobile
+    const music = document.getElementById('bg-music');
+    
+    if (music) {
+        music.play().then(() => {
+            console.log("Playback started successfully");
+        }).catch(error => {
+            // This happens if the user hasn't tapped anything yet
+            console.log("Playback failed, waiting for user interaction");
+        });
+    }
+
+    // 2. Switch screens
+    document.getElementById('welcome-screen').classList.add('hidden');
+    document.getElementById('game-container').classList.add('active');
+    
+    // 3. Start the game logic
+    startGame();
 }
 
 function backToMenu() {
