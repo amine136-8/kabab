@@ -23,7 +23,7 @@ body {
   min-height: 100vh;
   
   /* FULL PAGE BACKGROUND - Change this to your game background */
-  background: url("back2.png");
+  background: url("back22.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -291,19 +291,17 @@ h1 {
 /* ==================== CUSTOMER AREA - NO BOX, FLOATING ==================== */
 #customer-area {
   position: relative;
-  width: 100%;
-  height: 500px; /* increase this to give bigger customer room */
+  height: 200px;
   margin-bottom: 15px;
+  display: block;
 }
 
 .customer {
   position: absolute;
-  top: 75%;          /* center vertically */
+  top: 79%;          /* center vertically */
   left: 50%;         /* center horizontally */
   transform: translate(-50%, -50%); /* truly center */
   
-  width: 500px;      /* bigger width */
-  height: 450px;     /* bigger height, maintain aspect ratio */
   
   background-size: contain;
   background-position: center; /* center instead of bottom center */
@@ -316,12 +314,12 @@ h1 {
 
 
 /* Customer images */
-.cust-normal { background-image: url("c1.png"); }
-.cust-angry { background-image: url("c2.png"); height: 500px;top: 78%; }
+.cust-normal {}
+.cust-angry { background-image: url("c2.png") ; height: 500px;top: 79%; }
 .cust-vip { background-image: url("vip.png"); filter: drop-shadow(0 0 25px gold) drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5)); }
-.cust-troll { background-image: url("img/customers/troll.png"); }
-.cust-boss { background-image: url("img/customers/boss.png"); width: 240px; height: 320px; }
-.cust-critic { background-image: url("img/customers/critic.png"); }
+.cust-troll { background-image: url("joker.png");height: 500px;top: 78%; }
+.cust-boss { background-image: url("boss.png"); width: 240px; height: 320px; }
+.cust-critic { background-image: url("critic.png");height: 500px;top: 78%; }
 
 @keyframes angryShake {
   0%, 100% { transform: translateX(-50%) rotate(0deg); }
@@ -455,18 +453,20 @@ h1 {
 #menu {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 5px;
   position: absolute;  /* or fixed if you want it to stay visible on scroll */
-  bottom: 1px;           /* distance from top */
+  bottom: 3px;           /* distance from top */
   left: 50%;
   transform: translateX(-50%); /* center horizontally */
-  width: 90%;}
+  width: 90%;
+height: 30%;}
+  
 
 
 .item {
   background: linear-gradient(135deg, #ffd700 0%, #f5f5f5 100%);
   color: #000;
-  padding: 22px 16px;
+  padding: px 14px;
   border-radius: 18px;
   cursor: pointer;
   font-weight: bold;
@@ -619,9 +619,9 @@ h1 {
   position: fixed;
   top: 5px;
   right: 50px;
-  width: 250px; /* total width */
+  width: 250px;
   height: 45px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.35);
   border-radius: 15px;
   border: 3px solid #ffd700;
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
@@ -629,14 +629,28 @@ h1 {
   overflow: hidden;
   z-index: 50;
 }
+#difficulty-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  border-radius: 12px;
+  transition: width 0.6s ease, background 0.6s ease;
+  z-index: 0;
+}
+
+
 
 .bar-segment {
-  flex: 1; /* equal width for each segment */
-  background: rgba(0,0,0,0.1);
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
   margin: 0 1px;
   border-radius: 10px;
-  transition: background 0.5s ease-in-out;
+  z-index: 2;
+  pointer-events: none;
 }
+
 
 /* Active colors for each difficulty */
 .bar-segment.active.easy { background: #4CAF50; }        /* green */
@@ -833,6 +847,8 @@ body.is-loading #game-container {
 </div>
 
 <div id="difficulty-indicator">
+  <div id="difficulty-fill"></div>
+
   <div class="bar-segment easy"></div>
   <div class="bar-segment medium"></div>
   <div class="bar-segment hard"></div>
@@ -864,12 +880,21 @@ const BestScores = {
   },
   
   loadScores() {
-    const saved = localStorage.getItem('empireKababScores');
-    this.scores = saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('empireKababScores');
+      this.scores = saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Failed to load scores:', e);
+      this.scores = [];
+    }
   },
   
   saveScores() {
-    localStorage.setItem('empireKababScores', JSON.stringify(this.scores));
+    try {
+      localStorage.setItem('empireKababScores', JSON.stringify(this.scores));
+    } catch (e) {
+      console.error('Failed to save scores:', e);
+    }
   },
   
   addScore(score, difficulty, orders, combo) {
@@ -910,107 +935,124 @@ const BestScores = {
   }
 };
 
-// ==================== SCREEN NAVIGATION ====================
-// Add this at the start of your script
-window.addEventListener('load', function() {
-  const loader = document.getElementById('loading-screen');
-  const progress = document.getElementById('loading-progress');
+// ==================== AUDIO SYSTEM ====================
+const AudioSystem = {
+  context: null,
+  enabled: false,
+  unlocked: false,
+  volume: 0.3,
   
-  progress.style.width = "100%";
-  
-  setTimeout(() => {
-    loader.style.opacity = '0';
-    setTimeout(() => {
-      loader.style.display = 'none';
-    }, 500);
-  }, 1000);
-});
-function showWelcome() {
-  document.getElementById('welcome-screen').classList.remove('hidden');
-  document.getElementById('scores-screen').classList.remove('show');
-  document.getElementById('game-container').classList.remove('active');
-  document.getElementById('difficulty-indicator').style.display = 'none';
-  stopGame();
-}
-
-function showScores() {
-  BestScores.displayScores();
-  document.getElementById('welcome-screen').classList.add('hidden');
-  document.getElementById('scores-screen').classList.add('show');
-  document.getElementById('game-container').classList.remove('active');
-  document.getElementById('difficulty-indicator').style.display = 'none';
-}
-
-function showGame() {
-    // 1. Force the audio to "unlock" on mobile
-    const music = document.getElementById('bg-music');
-    
-    if (music) {
-        music.play().then(() => {
-            console.log("Playback started successfully");
-        }).catch(error => {
-            // This happens if the user hasn't tapped anything yet
-            console.log("Playback failed, waiting for user interaction");
-        });
+  init() {
+    if (this.enabled) return;
+    try {
+      this.context = new (window.AudioContext || window.webkitAudioContext)();
+      this.enabled = true;
+    } catch(e) {
+      console.warn('Audio not supported:', e);
     }
-
-    // 2. Switch screens
-    document.getElementById('welcome-screen').classList.add('hidden');
-    document.getElementById('game-container').classList.add('active');
-    
-    // 3. Start the game logic
-    startGame();
-}
-
-function backToMenu() {
-  document.getElementById('game-over').style.display = 'none';
-  showWelcome();
-}
-
-function exitGame() {
-  if (confirm('Voulez-vous vraiment quitter?')) {
-    window.close();
-    setTimeout(() => alert('Veuillez fermer cette fenêtre manuellement.'), 100);
-  }
-}
-function showGame() {
-  // 1. Visual Transitions
-  document.getElementById('welcome-screen').classList.add('hidden');
-  document.getElementById('scores-screen').classList.remove('show');
-  document.getElementById('game-container').classList.add('active');
-  document.getElementById('difficulty-indicator').style.display = 'block';
+  },
   
-  // 2. Audio Logic (Fail-safe)
-  const music = document.getElementById('bg-music');
-  if (music) {
-    music.volume = 0.5;
-    music.play().catch(error => {
-      console.log("Music blocked by browser. It will start on next interaction.");
+  unlock() {
+    if (this.unlocked || !this.context) return;
+    this.context.resume().then(() => { 
+      this.unlocked = true; 
     });
+  },
+  
+  play(freq, duration, type = 'sine', volume = 0.3) {
+    if (!this.enabled || !this.unlocked) return;
+    try {
+      const osc = this.context.createOscillator();
+      const gain = this.context.createGain();
+      osc.connect(gain);
+      gain.connect(this.context.destination);
+      osc.frequency.value = freq;
+      osc.type = type;
+      gain.gain.setValueAtTime(volume * this.volume, this.context.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + duration);
+      osc.start();
+      osc.stop(this.context.currentTime + duration);
+    } catch(e) {
+      console.warn('Audio play failed:', e);
+    }
+  },
+  
+  success() { 
+    this.play(523.25, 0.08); 
+    setTimeout(() => this.play(659.25, 0.12), 80); 
+  },
+  
+  error() { 
+    this.play(180, 0.15, 'sawtooth', 0.15); 
+  },
+  
+  combo() { 
+    this.play(880, 0.08); 
+    setTimeout(() => this.play(1046.5, 0.08), 60); 
+  },
+  
+  warning() { 
+    this.play(300, 0.1, 'square', 0.2); 
   }
+};
 
-  // 3. Start Game Logic
-  startGame(); 
-}
+// ==================== GAME CONFIG ====================
+'use strict';
 
 // ==================== GAME CONFIG ====================
 const CONFIG = {
-  ITEMS: ["🍗 Chicken", "🥩 Meat", "🌶️ Spicy", "🧀 Cheese", "🌯 Wrap", "🍖 Double"],
-  ITEM_NAMES: ["Chicken", "Meat", "Spicy", "Cheese", "Wrap", "Double"],
+  ITEMS: ["🍗 Chicken", "🥩 Meat", "🌶️ Pain Pita", "🧀 Cheese", "🌯 Libanais", "🍖 Double"],
+  ITEM_NAMES: ["Chicken", "Meat", "Pain Pita", "Cheese", "Libanais", "Double"],
   
   CUSTOMER_TYPES: {
-    NORMAL: { class: 'cust-normal', name: 'Client Normal', scoreMulti: 1, color: 'type-normal' },
-    ANGRY: { class: 'cust-angry', name: 'Client Énervé', scoreMulti: 1.5, penalty: 8, color: 'type-angry' },
-    VIP: { class: 'cust-vip', name: 'Client VIP', scoreMulti: 2.5, color: 'type-vip' },
-    TROLL: { class: 'cust-troll', name: 'Troll', scoreMulti: 0.8, fake: true, color: 'type-troll' },
-    BOSS: { class: 'cust-boss', name: 'BOSS RUSH', scoreMulti: 4, color: 'type-boss' },
-    CRITIC: { class: 'cust-critic', name: 'Critique', scoreMulti: 3, perfectOnly: true, color: 'type-critic' }
+    NORMAL: { 
+      class: 'cust-normal', 
+      name: 'Client Normal', 
+      scoreMulti: 1, 
+      color: 'type-normal' 
+    },
+    ANGRY: { 
+      class: 'cust-angry', 
+      name: 'Client Énervé', 
+      scoreMulti: 1.2, 
+      penalty: 7, 
+      color: 'type-angry' 
+    },
+    VIP: { 
+      class: 'cust-vip', 
+      name: 'Client VIP', 
+      scoreMulti: 1.5, 
+      color: 'type-vip' 
+    },
+    TROLL: { 
+      class: 'cust-troll', 
+      name: 'Troll', 
+      scoreMulti: 0.7, 
+      fake: true, 
+      color: 'type-troll' 
+    },
+    BOSS: { 
+      class: 'cust-boss', 
+      name: 'BOSS RUSH', 
+      scoreMulti: 2, 
+      color: 'type-boss' 
+    },
+    CRITIC: { 
+      class: 'cust-critic', 
+      name: 'Critique', 
+      scoreMulti: 1.8, 
+      perfectOnly: true, 
+      color: 'type-critic' 
+    }
   },
   
+  NORMAL_CUSTOMER_IMAGES: ["c1.png", "c3.png", "c4.png"],
+  
   BASE_TIME: 60,
-  BASE_WAIT_TIME: 15,
-  MIN_WAIT_TIME: 6,
-  MAX_DIFFICULTY: 7
+  BASE_WAIT_TIME: 12,
+  MIN_WAIT_TIME: 5,
+  MAX_DIFFICULTY: 7,
+  ORDERS_PER_DIFFICULTY: 8  // Increase difficulty every 8 orders instead of 5
 };
 
 // ==================== GAME STATE ====================
@@ -1029,51 +1071,7 @@ let gameState = {
   totalOrders: 0,
   mistakeCount: 0,
   difficulty: 1,
-  customerTimeout: null,
   isGameOver: false
-};
-
-
-// ==================== AUDIO SYSTEM ====================
-const AudioSystem = {
-  volume :1,
-  context: null,
-  enabled: false,
-  unlocked: false,
-  
-  init() {
-    if (this.enabled) return;
-    try {
-      this.context = new (window.AudioContext || window.webkitAudioContext)();
-      this.enabled = true;
-    } catch(e) {}
-  },
-  
-  unlock() {
-    if (this.unlocked || !this.context) return;
-    this.context.resume().then(() => { this.unlocked = true; });
-  },
-  
-  play(freq, duration, type = 'sine', volume = 1) {
-    if (!this.enabled || !this.unlocked) return;
-    try {
-      const osc = this.context.createOscillator();
-      const gain = this.context.createGain();
-      osc.connect(gain);
-      gain.connect(this.context.destination);
-      osc.frequency.value = freq;
-      osc.type = type;
-      gain.gain.setValueAtTime(volume, this.context.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + duration);
-      osc.start();
-      osc.stop(this.context.currentTime + duration);
-    } catch(e) {}
-  },
-  
-  success() { this.play(523.25, 0.08); setTimeout(() => this.play(659.25, 0.12), 80); },
-  error() { this.play(180, 0.15, 'sawtooth', 0.15); },
-  combo() { this.play(880, 0.08); setTimeout(() => this.play(1046.5, 0.08), 60); },
-  warning() { this.play(300, 0.1, 'square', 0.98); }
 };
 
 // ==================== UI ELEMENTS ====================
@@ -1092,11 +1090,65 @@ const UI = {
   finalScore: document.getElementById('final-score'),
   performanceMsg: document.getElementById('performance-msg'),
   statsSummary: document.getElementById('stats-summary'),
-  bonusZone: document.getElementById('bonus-zone'),
-  timeBar: document.getElementById('time-bar'),
-  diffLevel: document.getElementById('diff-level'),
-  customerArea: document.getElementById('customer-area')
+  timeBar: document.getElementById('time-bar')
 };
+
+// ==================== SCREEN NAVIGATION ====================
+window.addEventListener('load', function() {
+  const loader = document.getElementById('loading-screen');
+  const progress = document.getElementById('loading-progress');
+  
+  progress.style.width = "100%";
+  
+  setTimeout(() => {
+    loader.style.opacity = '0';
+    setTimeout(() => {
+      loader.style.display = 'none';
+    }, 500);
+  }, 1000);
+});
+
+function showWelcome() {
+  document.getElementById('welcome-screen').classList.remove('hidden');
+  document.getElementById('scores-screen').classList.remove('show');
+  document.getElementById('game-container').classList.remove('active');
+  stopGame();
+}
+
+function showScores() {
+  BestScores.displayScores();
+  document.getElementById('welcome-screen').classList.add('hidden');
+  document.getElementById('scores-screen').classList.add('show');
+  document.getElementById('game-container').classList.remove('active');
+}
+
+function showGame() {
+  document.getElementById('welcome-screen').classList.add('hidden');
+  document.getElementById('scores-screen').classList.remove('show');
+  document.getElementById('game-container').classList.add('active');
+  
+  const music = document.getElementById('bg-music');
+  if (music) {
+    music.volume = 0.3;
+    music.play().catch(error => {
+      console.log("Music playback requires user interaction");
+    });
+  }
+
+  startGame();
+}
+
+function backToMenu() {
+  document.getElementById('game-over').style.display = 'none';
+  showWelcome();
+}
+
+function exitGame() {
+  if (confirm('Voulez-vous vraiment quitter?')) {
+    window.close();
+    setTimeout(() => alert('Veuillez fermer cette fenêtre manuellement.'), 100);
+  }
+}
 
 // ==================== INITIALIZATION ====================
 function initMenu() {
@@ -1114,61 +1166,119 @@ function initMenu() {
   });
 }
 
-// ==================== DIFFICULTY SYSTEM ====================
+// ==================== DIFFICULTY SYSTEM - FIXED ====================
 function getWaitTime() {
-  const timeReduction = (gameState.difficulty - 1) * 2;
+  // More gradual reduction: 1.5s per difficulty level
+  const timeReduction = (gameState.difficulty - 1) * 1.5;
   return Math.max(CONFIG.MIN_WAIT_TIME, CONFIG.BASE_WAIT_TIME - timeReduction);
 }
 
 function getOrderComplexity() {
-  return Math.min(1 + Math.floor(gameState.difficulty / 2), 5);
+  // Start at 2 items, add 1 item every 2 difficulty levels
+  // Max complexity is 4 items (realistic for a fast food game)
+  if (gameState.difficulty <= 1) return 2;
+  if (gameState.difficulty <= 3) return 3;
+  if (gameState.difficulty <= 5) return 4;
+  return 5; // Maximum 5 items for extreme difficulty
 }
 
 function increaseDifficulty() {
   if (gameState.difficulty < CONFIG.MAX_DIFFICULTY) {
-    setDifficulty(gameState.difficulty++);
-    UI.diffLevel.textContent = gameState.difficulty;
-    showFloatingText(`⚡ DIFFICULTÉ ${gameState.difficulty}!`, '#ffd700');
+    gameState.difficulty++;
+    setDifficulty(gameState.difficulty);
+    showFloatingText(`⚡ NIVEAU ${gameState.difficulty}!`, '#ffd700');
   }
 }
+
 function setDifficulty(level) {
-  const segments = document.querySelectorAll('#difficulty-indicator .bar-segment');
-  segments.forEach((seg, i) => {
-    seg.classList.remove('active', 'easy', 'medium', 'hard', 'extreme', 'impossible');
-    if (i <= level) {
-      const levels = ['easy', 'medium', 'hard', 'extreme', 'impossible'];
-      seg.classList.add('active', levels[i]);
-    }
-  });
-  const labels = ['Easy', 'Medium', 'Hard', 'Extreme', 'Impossible'];
-  document.querySelector('#difficulty-indicator .label').textContent = `Difficulty: ${labels[level]}`;
+  const fill = document.getElementById("difficulty-fill");
+  const label = document.querySelector("#difficulty-indicator .label");
+
+  if (!fill || !label) return;
+
+  const maxLevel = CONFIG.MAX_DIFFICULTY;
+  const percent = Math.min((level / maxLevel) * 100, 100);
+
+  fill.style.width = percent + "%";
+
+  // More realistic difficulty labels
+  if (level <= 1) {
+    fill.style.background = "#4CAF50"; // green
+    label.textContent = "Niveau: Débutant";
+  } else if (level <= 2) {
+    fill.style.background = "#8BC34A"; // light green
+    label.textContent = "Niveau: Facile";
+  } else if (level <= 4) {
+    fill.style.background = "#FFEB3B"; // yellow
+    label.textContent = "Niveau: Normal";
+  } else if (level <= 5) {
+    fill.style.background = "#FF9800"; // orange
+    label.textContent = "Niveau: Difficile";
+  } else if (level <= 6) {
+    fill.style.background = "#F44336"; // red
+    label.textContent = "Niveau: Expert";
+  } else {
+    fill.style.background = "#9C27B0"; // purple
+    label.textContent = "Niveau: Maître";
+  }
 }
 
-
-
-
-// ==================== CUSTOMER SYSTEM ====================
+// ==================== CUSTOMER SYSTEM - FIXED ====================
 function spawnCustomer() {
   if (gameState.isGameOver) return;
   
-  clearTimeout(gameState.customerTimeout);
   clearInterval(gameState.orderTimer);
   UI.timerContainer.classList.remove('timer-warning');
   
   let type;
-  const rand = Math.random() * 100;
+  const rand = Math.random() * 100; // Fixed: was * 1, now * 100 for percentages
   const diff = gameState.difficulty;
   
-  if (diff < 2) type = rand < 80 ? 'NORMAL' : 'ANGRY';
-  else if (diff < 4) type = rand < 60 ? 'NORMAL' : (rand < 85 ? 'ANGRY' : 'VIP');
-  else if (diff < 6) type = rand < 40 ? 'NORMAL' : (rand < 65 ? 'ANGRY' : (rand < 85 ? 'VIP' : 'TROLL'));
-  else type = rand < 30 ? 'NORMAL' : (rand < 55 ? 'ANGRY' : (rand < 75 ? 'VIP' : (rand < 90 ? 'TROLL' : 'BOSS')));
+  // More realistic customer distribution
+  if (diff <= 1) {
+    // Level 1: Mostly normal customers
+    type = rand < 90 ? 'NORMAL' : 'ANGRY';
+  } else if (diff <= 2) {
+    // Level 2: Some angry customers appear
+    type = rand < 75 ? 'NORMAL' : (rand < 95 ? 'ANGRY' : 'VIP');
+  } else if (diff <= 4) {
+    // Level 3-4: Balanced mix
+    if (rand < 55) type = 'NORMAL';
+    else if (rand < 85) type = 'ANGRY';
+    else if (rand < 97) type = 'VIP';
+    else type = 'TROLL';
+  } else if (diff <= 6) {
+    // Level 5-6: More challenging customers
+    if (rand < 40) type = 'NORMAL';
+    else if (rand < 70) type = 'ANGRY';
+    else if (rand < 85) type = 'VIP';
+    else if (rand < 93) type = 'TROLL';
+    else if (rand < 98) type = 'BOSS';
+    else type = 'CRITIC';
+  } else {
+    // Level 7: Maximum challenge
+    if (rand < 30) type = 'NORMAL';
+    else if (rand < 55) type = 'ANGRY';
+    else if (rand < 75) type = 'VIP';
+    else if (rand < 88) type = 'TROLL';
+    else if (rand < 96) type = 'BOSS';
+    else type = 'CRITIC';
+  }
   
   gameState.currentCustomer = CONFIG.CUSTOMER_TYPES[type];
   
   UI.customer.className = 'customer ' + gameState.currentCustomer.class;
   UI.customerType.textContent = gameState.currentCustomer.name;
   UI.customerType.className = gameState.currentCustomer.color;
+
+  if (type === 'NORMAL') {
+    const randomImg = CONFIG.NORMAL_CUSTOMER_IMAGES[
+      Math.floor(Math.random() * CONFIG.NORMAL_CUSTOMER_IMAGES.length)
+    ];
+    UI.customer.style.backgroundImage = `url("${randomImg}")`;
+  } else {
+    UI.customer.style.backgroundImage = '';
+  }
   
   generateOrder();
   startOrderTimer();
@@ -1176,18 +1286,28 @@ function spawnCustomer() {
 
 function generateOrder() {
   const complexity = getOrderComplexity();
-  const actualComplexity = gameState.currentCustomer.name === 'BOSS RUSH' ? complexity + 1 : complexity;
+  
+  // Boss gets +1 item, but not excessive
+  const actualComplexity = gameState.currentCustomer.name === 'BOSS RUSH' 
+    ? Math.min(complexity + 1, 6) 
+    : complexity;
   
   gameState.currentOrder = [];
   gameState.currentOrderIndex = 0;
   
-  for (let i = 0; i < Math.min(actualComplexity, 6); i++) {
+  for (let i = 0; i < actualComplexity; i++) {
     let itemIndex;
+    let attempts = 0;
+    
     do {
-      itemIndex = Math.floor(Math.random() * CONFIG.ITEM_NAMES.length);
-    } while (gameState.currentOrder.length > 0 && 
-             gameState.currentOrder[gameState.currentOrder.length - 1] === itemIndex &&
-             Math.random() < 0.7);
+      itemIndex = Math.floor(Math.random() * CONFIG.ITEMS.length);
+      attempts++;
+    } while (
+      attempts < 10 && // Prevent infinite loops
+      gameState.currentOrder.length > 0 && 
+      gameState.currentOrder[gameState.currentOrder.length - 1] === itemIndex &&
+      Math.random() < 0.7 // 70% chance to avoid consecutive duplicates
+    );
     
     gameState.currentOrder.push(itemIndex);
   }
@@ -1201,8 +1321,11 @@ function displayOrder() {
     const span = document.createElement('span');
     span.className = 'order-item';
     
-    if (i < gameState.currentOrderIndex) span.classList.add('completed');
-    else if (i === gameState.currentOrderIndex) span.classList.add('current');
+    if (i < gameState.currentOrderIndex) {
+      span.classList.add('completed');
+    } else if (i === gameState.currentOrderIndex) {
+      span.classList.add('current');
+    }
     
     span.textContent = CONFIG.ITEMS[itemIndex];
     UI.orderDisplay.appendChild(span);
@@ -1224,12 +1347,15 @@ function startOrderTimer() {
     const percent = Math.max(0, (gameState.orderTimeLeft / gameState.orderTimeMax) * 100);
     UI.orderTimerBar.style.width = percent + '%';
     
-    if (gameState.orderTimeLeft <= 3) {
+    // Warning at 3 seconds remaining
+    if (gameState.orderTimeLeft <= 3 && gameState.orderTimeLeft > 2.95) {
       UI.timerContainer.classList.add('timer-warning');
-      if (gameState.orderTimeLeft > 2.95) AudioSystem.warning();
+      AudioSystem.warning();
     }
     
-    if (gameState.orderTimeLeft <= 0) orderTimeout();
+    if (gameState.orderTimeLeft <= 0) {
+      orderTimeout();
+    }
   }, 50);
 }
 
@@ -1237,11 +1363,10 @@ function orderTimeout() {
   if (gameState.isGameOver) return;
   
   clearInterval(gameState.orderTimer);
-  clearTimeout(gameState.customerTimeout);
   
   const penalty = gameState.currentCustomer.penalty || 5;
   gameState.time -= penalty;
-  gameState.combo = 0;
+  gameState.combo = 0; // Reset combo completely on timeout
   gameState.mistakeCount++;
   
   AudioSystem.error();
@@ -1254,13 +1379,18 @@ function orderTimeout() {
   
   if (gameState.time > 0) {
     setTimeout(() => spawnCustomer(), 500);
+  } else {
+    endGame();
   }
 }
 
 // ==================== SERVING SYSTEM ====================
 function serveItem(itemIndex) {
-  if (gameState.isGameOver || gameState.currentOrderIndex >= gameState.currentOrder.length) return;
+  if (gameState.isGameOver || gameState.currentOrderIndex >= gameState.currentOrder.length) {
+    return;
+  }
   
+  // Troll customer has 25% chance to trick you
   if (gameState.currentCustomer.fake && Math.random() < 0.25) {
     wrongOrder();
     showFloatingText('🤡 PIÈGE!', '#9b59b6');
@@ -1269,137 +1399,119 @@ function serveItem(itemIndex) {
   
   const expected = gameState.currentOrder[gameState.currentOrderIndex];
   
-  if (itemIndex === expected) correctItem();
-  else wrongOrder();
+  if (itemIndex === expected) {
+    correctItem();
+  } else {
+    wrongOrder();
+  }
 }
 
 function correctItem() {
   gameState.currentOrderIndex++;
   displayOrder();
   
-  if (gameState.currentOrderIndex >= gameState.currentOrder.length) completeOrder();
-  else {
+  if (gameState.currentOrderIndex >= gameState.currentOrder.length) {
+    completeOrder();
+  } else {
     AudioSystem.success();
-    AudioSystem.combo();
     flashScreen('green');
   }
 }
 
 function wrongOrder() {
-  const timePenalty = 5;
+  const timePenalty = 4; // Reduced from 5 to 4 seconds
   gameState.time -= timePenalty;
-  gameState.combo = Math.floor(gameState.combo / 2);
+  gameState.combo = Math.floor(gameState.combo / 2); // Halve combo instead of reset
   gameState.mistakeCount++;
   
+  // Critic penalizes mistakes heavily
   if (gameState.currentCustomer.perfectOnly) {
-    gameState.time -= 5;
-    showFloatingText('🧐 INACCEPTABLE!', '#ff0000');
+    gameState.time -= 4;
+    showFloatingText('🧐 INACCEPTABLE! -4s', '#ff0000');
+  } else {
+    showFloatingText(`❌ ERREUR! -${timePenalty}s`, '#ff0000');
   }
   
-  AudioSystem.warning();
+  AudioSystem.error();
   flashScreen('red');
-  showFloatingText(`❌ ERREUR! -${timePenalty}s`, '#ff0000');
   document.body.classList.add('shake');
   setTimeout(() => document.body.classList.remove('shake'), 350);
   
   updateUI();
+  
+  if (gameState.time <= 0) {
+    endGame();
+  }
 }
 
+// ==================== SCORING SYSTEM - FIXED ====================
 function completeOrder() {
   if (gameState.isGameOver) return;
   
   clearInterval(gameState.orderTimer);
-  clearTimeout(gameState.customerTimeout);
   UI.timerContainer.classList.remove('timer-warning');
   
   gameState.combo++;
   gameState.totalOrders++;
-  gameState.time += 5;
   
-  if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
+  // Base time reward: 4 seconds per order
+  gameState.time += 4;
   
-  const baseScore = 2;
-  const complexityBonus = (gameState.currentOrder.length - 1) * 2;
-  const comboBonus = Math.floor(gameState.combo / 2);
-  const difficultyBonus = gameState.difficulty;
-  const speedBonus = gameState.orderTimeLeft > gameState.orderTimeMax * 0.7 ? 3 : 0;
-  const customerBonus = Math.floor(gameState.currentCustomer.scoreMulti);
+  if (gameState.combo > gameState.maxCombo) {
+    gameState.maxCombo = gameState.combo;
+  }
   
-  const totalScore = baseScore + complexityBonus + comboBonus + difficultyBonus + speedBonus + customerBonus;
+  // REALISTIC SCORING SYSTEM
+  // Base score per item: 5 points
+  const baseScore = gameState.currentOrder.length * 5;
+  
+  // Combo bonus: +1 point per combo level (not exponential)
+  const comboBonus = gameState.combo;
+  
+  // Difficulty bonus: +2 points per difficulty level
+  const difficultyBonus = gameState.difficulty * 2;
+  
+  // Speed bonus: +5 points if served in top 70% of time
+  const speedBonus = gameState.orderTimeLeft > gameState.orderTimeMax * 0.7 ? 5 : 0;
+  
+  // Calculate total before multiplier
+  const subtotal = baseScore + comboBonus + difficultyBonus + speedBonus;
+  
+  // Apply customer multiplier (now more balanced: 0.7 to 2.0)
+  const totalScore = Math.floor(subtotal * gameState.currentCustomer.scoreMulti);
+  
   gameState.score += totalScore;
   
+  // Speed bonus gives extra time
   if (speedBonus > 0) {
     gameState.time += 2;
-    showFloatingText('+7s Rapide! ⚡', '#00ff00');
+    showFloatingText('+6s Rapide! ⚡', '#00ff00');
   } else {
-    showFloatingText('+5s ⏰', '#00ff00');
+    showFloatingText('+4s ⏰', '#00ff00');
   }
   
   AudioSystem.success();
   
+  // Combo milestone at every 5 orders
   if (gameState.combo % 5 === 0 && gameState.combo > 0) {
     AudioSystem.combo();
     showFloatingText(`${gameState.combo}x COMBO! 🔥`, '#ffd700');
-    gameState.time += 3;
+    gameState.time += 2; // Reduced from 3 to 2
   }
   
   flashScreen('green');
-  showFloatingText(`+${totalScore} 🔥`, '#ffd700');
+  showFloatingText(`+${totalScore} pts`, '#ffd700');
   
-  if (gameState.totalOrders % 5 === 0 && gameState.totalOrders > 0) increaseDifficulty();
-  if (gameState.combo > 0 && gameState.combo % 6 === 0) offerBonusAction();
+  // Increase difficulty every 8 orders (more realistic progression)
+  if (gameState.totalOrders % CONFIG.ORDERS_PER_DIFFICULTY === 0 && gameState.totalOrders > 0) {
+    increaseDifficulty();
+  }
   
   updateUI();
   
   if (!gameState.isGameOver) {
     setTimeout(() => spawnCustomer(), 350);
   }
-}
-
-// ==================== BONUS ACTIONS ====================
-function offerBonusAction() {
-  if (UI.bonusZone.children.length > 0 || gameState.isGameOver) return;
-  
-  const actions = [
-    { text: '⏱️ +15s GARANTI', reward: 'time' },
-    { text: '🎲 +10 POINTS (50%)', reward: 'points', risk: 0.5, value: 10 },
-    { text: '🔥 COMBO +3', reward: 'combo', value: 3 }
-  ];
-  
-  const action = actions[Math.floor(Math.random() * actions.length)];
-  const btn = document.createElement('button');
-  btn.className = 'bonus-btn';
-  btn.textContent = action.text;
-  btn.onclick = () => executeBonusAction(action, btn);
-  UI.bonusZone.appendChild(btn);
-  
-  setTimeout(() => { if (btn.parentNode) btn.remove(); }, 6000);
-}
-
-function executeBonusAction(action, btn) {
-  btn.remove();
-  
-  if (action.reward === 'time') {
-    gameState.time += 15;
-    showFloatingText('+15s! ⏰', '#00ff00');
-    AudioSystem.success();
-  } else if (action.reward === 'combo') {
-    gameState.combo += action.value;
-    showFloatingText(`🔥 COMBO +${action.value}!`, '#ffd700');
-    AudioSystem.combo();
-  } else if (action.reward === 'points') {
-    if (Math.random() < (1 - action.risk)) {
-      gameState.score += action.value;
-      showFloatingText(`+${action.value} PTS! 🎉`, '#ffd700');
-      AudioSystem.combo();
-    } else {
-      gameState.time -= 5;
-      showFloatingText('💥 RATÉ! -5s', 'red');
-      AudioSystem.error();
-      flashScreen('red');
-    }
-  }
-  updateUI();
 }
 
 // ==================== VISUAL EFFECTS ====================
@@ -1430,6 +1542,7 @@ function updateUI() {
   const timePercent = (gameState.time / CONFIG.BASE_TIME) * 100;
   UI.timeBar.style.width = Math.min(100, Math.max(0, timePercent)) + '%';
   
+  // Warning when time is low
   if (gameState.time <= 15) {
     UI.time.parentElement.style.animation = 'shake 0.5s infinite';
     UI.time.style.color = '#ff3333';
@@ -1456,17 +1569,15 @@ function startGame() {
     totalOrders: 0,
     mistakeCount: 0,
     difficulty: 1,
-    customerTimeout: null,
     isGameOver: false
   };
   
   AudioSystem.init();
   
   UI.gameOver.style.display = 'none';
-  UI.bonusZone.innerHTML = '';
-  UI.diffLevel.textContent = '1';
   document.body.classList.remove('shake', 'flash-red', 'flash-green');
   
+  setDifficulty(1);
   updateUI();
   spawnCustomer();
   
@@ -1480,7 +1591,9 @@ function startGame() {
     gameState.time -= 0.1;
     updateUI();
     
-    if (gameState.time <= 0) endGame();
+    if (gameState.time <= 0) {
+      endGame();
+    }
   }, 100);
 }
 
@@ -1488,15 +1601,15 @@ function stopGame() {
   gameState.isGameOver = true;
   clearInterval(gameState.gameTimer);
   clearInterval(gameState.orderTimer);
-  clearTimeout(gameState.customerTimeout);
 }
 
 function endGame() {
+  if (gameState.isGameOver) return;
+  
   gameState.isGameOver = true;
   
   clearInterval(gameState.gameTimer);
   clearInterval(gameState.orderTimer);
-  clearTimeout(gameState.customerTimeout);
   
   BestScores.addScore(
     Math.floor(gameState.score),
@@ -1507,16 +1620,18 @@ function endGame() {
   
   UI.finalScore.textContent = Math.floor(gameState.score);
   
+  // More realistic score thresholds
   let msg = '';
-  if (gameState.score >= 300) msg = '🏆 LÉGENDE DE L\'EMPIRE! 🏆';
-  else if (gameState.score >= 200) msg = '🔥 MAÎTRE KABAB! 🔥';
-  else if (gameState.score >= 150) msg = '⭐ SERVICE EXCEPTIONNEL! ⭐';
-  else if (gameState.score >= 100) msg = '👍 BON TRAVAIL! 👍';
-  else if (gameState.score >= 50) msg = '💪 BON EFFORT! 💪';
-  else msg = '🎯 CONTINUE!';
+  if (gameState.score >= 500) msg = '🏆 LÉGENDE DE L\'EMPIRE! 🏆';
+  else if (gameState.score >= 350) msg = '🔥 MAÎTRE KABAB! 🔥';
+  else if (gameState.score >= 250) msg = '⭐ SERVICE EXCEPTIONNEL! ⭐';
+  else if (gameState.score >= 150) msg = '👍 BON TRAVAIL! 👍';
+  else if (gameState.score >= 80) msg = '💪 BON EFFORT! 💪';
+  else msg = '🎯 CONTINUE À T\'ENTRAÎNER!';
   
   UI.performanceMsg.textContent = msg;
   
+  // Fixed accuracy calculation (was dividing by 10 instead of 100)
   const accuracy = gameState.totalOrders > 0 
     ? Math.floor((gameState.totalOrders / (gameState.totalOrders + gameState.mistakeCount)) * 100)
     : 0;
@@ -1524,29 +1639,12 @@ function endGame() {
   UI.statsSummary.innerHTML = `
     <strong>Commandes servies:</strong> ${gameState.totalOrders}<br>
     <strong>Meilleur combo:</strong> ${gameState.maxCombo}x<br>
-    <strong>Difficulté atteinte:</strong> ${gameState.difficulty} / 7<br>
+    <strong>Niveau atteint:</strong> ${gameState.difficulty} / ${CONFIG.MAX_DIFFICULTY}<br>
     <strong>Précision:</strong> ${accuracy}%
   `;
   
   UI.gameOver.style.display = 'block';
-  AudioSystem.unlock();
 }
-window.addEventListener('load', function() {
-  const loader = document.getElementById('loading-screen');
-  const progress = document.getElementById('loading-progress');
-  
-  // Fake a smooth progress bar for better UX
-  progress.style.width = "100%";
-  
-  setTimeout(() => {
-    loader.style.opacity = '0';
-    setTimeout(() => {
-      loader.style.display = 'none';
-      document.body.classList.remove('is-loading');
-    }, 500);
-  }, 800); // Small delay so people can actually see the cool loader
-});
-
 
 // ==================== INITIALIZATION ====================
 BestScores.init();
