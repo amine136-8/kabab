@@ -3,796 +3,468 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>L'Empire Kabab – Service Rapide</title>
+<title>CRISPY KEBAB – Service Rapide</title>
 <style>
-* { 
-  box-sizing: border-box; 
-  margin: 0;
-  padding: 0;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+/* ===== CUSTOM BACKGROUNDS ===== */
+/* Replace the values below with your own PNG/JPG paths to override CSS-only backgrounds */
+/* Example: --bg-body: url('assets/bg-kebab-shop.png'); */
+
+:root {
+  --bg-customer: url('back2.png');
+  --bg-customer-size: cover;
+  --bg-customer-pos: center center;
+  --bg-menu-color: rgba(255,255,255,0.9);
+  --bg-menu-size: cover;
+  --bg-menu-pos: center center;
+  --bg-welcome: url('back.png');
+  --bg-welcome-size: cover;
+  --bg-welcome-pos: center center;
 }
 
 body {
   margin: 0;
   font-family: 'Arial Black', Arial, sans-serif;
   text-align: center;
-  overflow-x: hidden;
-  overflow-y: hidden;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  min-height: 100vh;
-  
-  /* FULL PAGE BACKGROUND - Change this to your game background */
-  background: url("back22.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-color: #241108;
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0px, transparent 79px, rgba(40,18,8,0.5) 79px, rgba(40,18,8,0.5) 80px),
+    repeating-linear-gradient(90deg, transparent 39px, transparent 119px, rgba(40,18,8,0.35) 119px, rgba(40,18,8,0.35) 120px),
+    repeating-linear-gradient(0deg, transparent 0px, transparent 39px, rgba(40,18,8,0.4) 39px, rgba(40,18,8,0.4) 40px),
+    radial-gradient(ellipse 900px 500px at 50% 25%, rgba(200,120,40,0.08) 0%, transparent 100%),
+    radial-gradient(ellipse 500px 400px at 30% 70%, rgba(160,80,20,0.05) 0%, transparent 100%),
+    radial-gradient(ellipse 500px 400px at 70% 70%, rgba(160,80,20,0.05) 0%, transparent 100%),
+    radial-gradient(ellipse 800px 600px at 50% 50%, transparent 30%, rgba(0,0,0,0.3) 100%),
+    linear-gradient(180deg, #3d2317 0%, #2c1810 40%, #3d2317 70%, #1a0e08 100%);
+  background-size:
+    80px 80px, 80px 80px, 80px 80px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+  background-position:
+    0 0, 0 40px, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
 }
 
-/* Dark overlay for better readability (optional) */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.2);
-  pointer-events: none;
-  z-index: 0;
+/* ==================== LOADING ==================== */
+#loading-screen {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background:
+    var(--bg-loading, none),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 79px, rgba(40,18,8,0.4) 79px, rgba(40,18,8,0.4) 80px),
+    repeating-linear-gradient(0deg, transparent 0px, transparent 39px, rgba(40,18,8,0.3) 39px, rgba(40,18,8,0.3) 40px),
+    radial-gradient(ellipse at 50% 50%, rgba(200,120,40,0.1) 0%, transparent 60%),
+    linear-gradient(180deg, #1a0e08, #2c1810, #0d0705);
+  background-size:
+    var(--bg-loading-size, auto), 80px 80px, 80px 80px, 100% 100%, 100% 100%;
+  display: flex; justify-content: center; align-items: center;
+  z-index: 9999; transition: opacity 0.5s ease;
 }
+.loader-content { text-align: center; color: #ffd700; font-family: 'Arial Black', sans-serif; position: relative; z-index: 2; }
+.loader-kebab { width: 40px; height: 120px; position: relative; margin: 0 auto 25px; animation: loaderSway 1.5s ease-in-out infinite; }
+.loader-kebab .stick { width: 5px; height: 120px; background: linear-gradient(#ccc, #999, #666); border-radius: 3px; position: absolute; left: 50%; transform: translateX(-50%); z-index: 1; }
+.loader-kebab .layer { width: 40px; height: 14px; border-radius: 7px; position: absolute; left: 50%; transform: translateX(-50%); z-index: 2; }
+.loader-kebab .layer:nth-child(2) { top: 5px; background: #8B4513; }
+.loader-kebab .layer:nth-child(3) { top: 22px; background: #4CAF50; }
+.loader-kebab .layer:nth-child(4) { top: 39px; background: #e74c3c; }
+.loader-kebab .layer:nth-child(5) { top: 56px; background: #f1c40f; }
+.loader-kebab .layer:nth-child(6) { top: 73px; background: #8B4513; }
+.loader-kebab .layer:nth-child(7) { top: 90px; background: #4CAF50; }
+@keyframes loaderSway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+#progress-bar-container { width: 200px; height: 10px; background: rgba(0,0,0,0.5); border-radius: 5px; margin: 15px auto 0; overflow: hidden; border: 1px solid rgba(255,215,0,0.3); }
+#loading-progress { width: 0%; height: 100%; background: linear-gradient(90deg, #ff6600, #ffd700); transition: width 0.2s; border-radius: 5px; }
 
-/* ==================== WELCOME SCREEN ==================== */
+/* ==================== WELCOME ==================== */
 #welcome-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  z-index: 3000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: url("back.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 3000; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  background:
+    var(--bg-welcome);
+  background-size:
+    var(--bg-welcome-size, cover);
+  background-position:
+    var(--bg-welcome-pos, center center);
 }
-
-#welcome-screen.hidden {
-  display: none;
-}
-
-.menu-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 35vh;
-  padding: 30px 25px;
-  border-radius: 30px;
-}
-
-.menu-btn {
-  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
-  color: #ffd900;
-  border: 3px solid #ffd700;
-  border-radius: 22px;
-  padding: 18px 42px;
-  font-size: 1.35em;
-  font-weight: 900;
-  letter-spacing: 1px;
-  font-family: "Arial Black", Impact, sans-serif;
-  cursor: pointer;
-  box-shadow: 0 6px 0 #b89b00, 0 12px 25px rgba(255, 215, 0, 0.35);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.menu-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 0 #ffd700, 0 18px 35px rgba(255, 215, 0, 0.7);
-}
-
-.menu-btn:active {
-  transform: translateY(3px);
-  box-shadow: 0 3px 0 #b89b00, 0 6px 15px rgba(255, 215, 0, 0.3);
-}
-
-.menu-btn.secondary {
-  background: linear-gradient(135deg, #2a2a2a, #111);
-  color: #ffffff;
-  border-color: #ffffff;
-  box-shadow: 0 5px 0 #aaa, 0 12px 22px rgba(255, 255, 255, 0.25);
-}
-
-.menu-btn.exit {
-  background: linear-gradient(135deg, #400000, #1a0000);
-  color: #fff;
-  border-color: #ffcc00;
-  font-size: 1.1em;
-  box-shadow: 0 5px 0 #992200, 0 10px 20px rgba(255, 100, 0, 0.4);
-}
-
-/* ==================== BEST SCORES SCREEN ==================== */
-#scores-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  z-index: 3000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.95);
-}
-
-#scores-screen.show {
-  display: flex;
-}
-
-.scores-container {
-  background: rgba(0, 0, 0, 0.92);
-  padding: 40px;
-  border-radius: 25px;
-  border: 6px solid #ffd700;
-  box-shadow: 0 0 60px rgba(255, 215, 0, 0.8);
-  max-width: 90%;
-  width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-.scores-title {
-  font-size: 2.2em;
-  color: #ffd700;
-  margin-bottom: 30px;
-  text-shadow: 3px 3px 0 #000;
-}
-
-.score-list {
-  margin-bottom: 30px;
-}
-
-.score-item {
-  background: rgba(255, 215, 0, 0.1);
-  padding: 15px 20px;
-  margin-bottom: 12px;
-  border-radius: 15px;
-  border: 3px solid #ffd700;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.score-rank {
-  font-size: 1.8em;
-  color: #ffd700;
-  font-weight: bold;
-  width: 50px;
-}
-
-.score-details {
-  flex: 1;
-  text-align: left;
-  margin-left: 15px;
-}
-
-.score-points {
-  font-size: 1.5em;
-  color: #fff;
-  font-weight: bold;
-}
-
-.score-info {
-  font-size: 0.9em;
-  color: #ffaa00;
-  margin-top: 5px;
-}
-
-.no-scores {
-  padding: 40px;
-  color: #999;
-  font-size: 1.2em;
-}
-
-.back-btn {
-  background: linear-gradient(135deg, #666 0%, #333 100%);
-  color: #fff;
-  border: none;
-  padding: 15px 35px;
-  border-radius: 20px;
-  font-size: 1.2em;
-  font-weight: bold;
-  cursor: pointer;
-  border: 4px solid #999;
-  font-family: 'Arial Black', Arial, sans-serif;
-  transition: all 0.2s;
-}
-
-.back-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(150, 150, 150, 0.5);
-}
-
-/* ==================== GAME SCREEN ==================== */
-#game-container {
-  max-width: 650px;
-  margin: 0 auto;
-  padding: 15px;
-  position: relative;
-  min-height: 100vh;
-  display: none;
-  flex-direction: column;
-  z-index: 1;
-}
-
-#game-container.active {
-  display: flex;
-}
-
-h1 {
-  margin: 8px 0;
-  font-size: 2em;
-  text-shadow: 3px 3px 0 #000000, 0 0 15px #ffd700;
-  letter-spacing: 2px;
-  color: #ffd700;
-}
-
-/* ==================== STATS BAR ==================== */
-#stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 15px;
-}
-
-.stat {
-  background: rgba(0, 0, 0, 0.85);
-  padding: 12px;
-  border-radius: 15px;
-  border: 3px solid #ffd700;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-label {
-  font-size: 0.8em;
-  opacity: 0.9;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #ffd700;
-  margin-bottom: 5px;
-}
-
-.stat-value {
-  font-size: 1.8em;
-  font-weight: bold;
-  color: #fff;
-}
-
-#time-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 100%;
-  background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
-  opacity: 0.9;
-  transition: width 0.2s linear;
-  z-index: 0;
-}
-
-.stat-content {
-  position: relative;
-  z-index: 1;
-}
-
-/* ==================== CUSTOMER AREA - NO BOX, FLOATING ==================== */
-#customer-area {
-  position: relative;
-  height: 200px;
-  margin-bottom: 15px;
-  display: block;
-}
-
-.customer {
-  position: absolute;
-  top: 79%;          /* center vertically */
-  left: 50%;         /* center horizontally */
-  transform: translate(-50%, -50%); /* truly center */
-  
-  
-  background-size: contain;
-  background-position: center; /* center instead of bottom center */
-  background-repeat: no-repeat;
-  
-  transition: transform 0.3s ease;
-  z-index: 2;
-  filter: drop-shadow(0 8px 25px rgba(0, 0, 0, 0.5));
-}
-
-
-/* Customer images */
-.cust-normal {}
-.cust-angry { background-image: url("c2.png") ; height: 500px;top: 79%; }
-.cust-vip { background-image: url("vip.png"); filter: drop-shadow(0 0 25px gold) drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5)); }
-.cust-troll { background-image: url("joker.png");height: 500px;top: 78%; }
-.cust-boss { background-image: url("boss.png"); width: 240px; height: 320px; }
-.cust-critic { background-image: url("critic.png");height: 500px;top: 78%; }
-
-@keyframes angryShake {
-  0%, 100% { transform: translateX(-50%) rotate(0deg); }
-  25% { transform: translateX(-50%) rotate(-2deg); }
-  75% { transform: translateX(-50%) rotate(2deg); }
-}
-
-/* ==================== ORDER BUBBLE - WHITE BOX WITH HORIZONTAL TIMER ==================== */
-#order-bubble {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  
-  background: white;
-  border-radius: 20px;
-  padding: 15px 20px 10px 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-  
-  min-width: 200px;
-  max-width: 90%;
-  
-  z-index: 5;
-  
-  /* Speech bubble tail */
-  position: relative;
-}
-
-/* Speech bubble tail pointing down to customer */
-#order-bubble::after {
+#welcome-screen::before {
   content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse 700px 500px at 50% 40%, rgba(200,120,40,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.4) 100%);
+  pointer-events: none; z-index: 1;
+}
+#welcome-screen.hidden { display: none; }
+.welcome-content { position: relative; z-index: 2; padding: 40px 30px; }
+
+.string-lights { position: absolute; top: 0; left: 0; right: 0; height: 55px; pointer-events: none; z-index: 2; overflow: visible; }
+.string-lights .wire { position: absolute; top: 18px; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 0%, rgba(150,150,150,0.5) 5%, rgba(150,150,150,0.5) 95%, transparent 100%); }
+.string-lights .bulb { position: absolute; top: 14px; width: 10px; height: 14px; background: radial-gradient(ellipse at 50% 30%, #ffd700, #ff8800); border-radius: 50% 50% 40% 40%; transform: translateX(-50%); box-shadow: 0 0 8px rgba(255,200,0,0.5), 0 0 25px rgba(255,200,0,0.2); animation: bulbGlow 2.5s ease-in-out infinite alternate; }
+.string-lights .bulb::before { content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%); width: 2px; height: 5px; background: #888; border-radius: 1px; }
+.string-lights .bulb::after { content: ''; position: absolute; bottom: -3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: radial-gradient(ellipse at 50% 50%, #ffa500, transparent); border-radius: 50%; filter: blur(2px); }
+@keyframes bulbGlow { 0% { box-shadow: 0 0 6px rgba(255,200,0,0.3), 0 0 20px rgba(255,200,0,0.1); opacity: 0.7; } 100% { box-shadow: 0 0 14px rgba(255,200,0,0.7), 0 0 40px rgba(255,200,0,0.3); opacity: 1; } }
+
+.game-title-wrap { position: relative; display: inline-block; margin-bottom: 5px; }
+.game-title-wrap::before { content: 'CRISPY KEBAB'; position: absolute; top: 0; left: 0; right: 0; font-size: 2.8em; font-weight: 900; letter-spacing: 3px; color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.4), 0 0 30px rgba(255,215,0,0.2), 0 0 60px rgba(255,215,0,0.1); opacity: 0.6; filter: blur(8px); pointer-events: none; z-index: -1; }
+.game-title { font-size: 2.8em; color: #ffd700; text-shadow: 3px 3px 0 #000, 0 0 20px rgba(255,215,0,0.3); letter-spacing: 3px; position: relative; z-index: 1; }
+.game-subtitle { font-size: 1em; color: #cc9966; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 35px; text-shadow: 2px 2px 0 #000; position: relative; }
+.game-subtitle::before, .game-subtitle::after { content: '\2014'; margin: 0 10px; opacity: 0.4; }
+
+.menu-buttons { display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 3; }
+.menu-btn { background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); color: #ffd700; border: 3px solid #ffd700; border-radius: 22px; padding: 17px 42px; font-size: 1.3em; font-weight: 900; letter-spacing: 1px; font-family: "Arial Black", Impact, sans-serif; cursor: pointer; box-shadow: 0 6px 0 #b89b00, 0 12px 25px rgba(255,215,0,0.3), 0 0 40px rgba(255,215,0,0.08); transition: transform 0.15s ease, box-shadow 0.15s ease; position: relative; overflow: hidden; }
+.menu-btn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent); border-radius: 19px 19px 0 0; pointer-events: none; }
+.menu-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 0 #ffd700, 0 18px 35px rgba(255,215,0,0.5), 0 0 60px rgba(255,215,0,0.15); }
+.menu-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 #b89b00, 0 6px 15px rgba(255,215,0,0.3); }
+.menu-btn.secondary { background: linear-gradient(135deg, #2a2a2a, #111); color: #fff; border-color: rgba(255,255,255,0.6); box-shadow: 0 5px 0 #666, 0 12px 22px rgba(255,255,255,0.1); }
+.menu-btn.secondary:hover { border-color: #fff; box-shadow: 0 7px 0 #888, 0 18px 30px rgba(255,255,255,0.2); }
+.menu-btn.exit { background: linear-gradient(135deg, #400000, #1a0000); color: #fff; border-color: #ff6600; font-size: 1.05em; box-shadow: 0 5px 0 #992200, 0 10px 20px rgba(255,60,0,0.3); }
+
+/* ==================== SCORES ==================== */
+#scores-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.95); }
+#scores-screen.show { display: flex; }
+.scores-container { background: rgba(0,0,0,0.92); padding: 40px; border-radius: 25px; border: 6px solid #ffd700; box-shadow: 0 0 60px rgba(255,215,0,0.6); max-width: 90%; width: 500px; max-height: 80vh; overflow-y: auto; position: relative; }
+.scores-container::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100%; background: radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.05), transparent 70%); pointer-events: none; }
+.scores-title { font-size: 2.2em; color: #ffd700; margin-bottom: 30px; text-shadow: 3px 3px 0 #000; position: relative; }
+.score-list { margin-bottom: 30px; }
+.score-item { background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,215,0,0.03)); padding: 15px 20px; margin-bottom: 12px; border-radius: 15px; border: 2px solid rgba(255,215,0,0.3); display: flex; justify-content: space-between; align-items: center; transition: border-color 0.2s; }
+.score-item:hover { border-color: rgba(255,215,0,0.6); }
+.score-rank { font-size: 1.8em; color: #ffd700; font-weight: bold; width: 50px; text-shadow: 2px 2px 0 #000; }
+.score-details { flex: 1; text-align: left; margin-left: 15px; }
+.score-points { font-size: 1.5em; color: #fff; font-weight: bold; }
+.score-info { font-size: 0.9em; color: #ffaa00; margin-top: 5px; }
+.no-scores { padding: 40px; color: #999; font-size: 1.2em; }
+.back-btn { background: linear-gradient(135deg, #555, #222); color: #fff; border: none; padding: 14px 35px; border-radius: 20px; font-size: 1.1em; font-weight: bold; cursor: pointer; border: 3px solid rgba(255,255,255,0.3); font-family: 'Arial Black', Arial, sans-serif; transition: all 0.2s; }
+.back-btn:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.6); box-shadow: 0 6px 20px rgba(150,150,150,0.3); }
+
+/* ==================== GAME LAYOUT ==================== */
+#game-container { display: none; flex-direction: column; height: 100dvh; max-width: 650px; margin: 0 auto; padding: 8px 12px 0; position: relative; z-index: 1; }
+#game-container.active { display: flex; }
+
+.game-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; background: rgba(0,0,0,0.4); border-radius: 14px; border: 1px solid rgba(255,215,0,0.15); flex-shrink: 0; position: relative; overflow: hidden; }
+.game-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent); }
+.game-header h1 { font-size: 1em; color: #ffd700; text-shadow: 2px 2px 0 #000; letter-spacing: 1px; white-space: nowrap; margin: 0; }
+
+#difficulty-indicator { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.diff-bars { display: flex; gap: 3px; }
+.diff-bar { width: 14px; height: 16px; background: rgba(255,255,255,0.08); border-radius: 3px; transition: background 0.4s ease, box-shadow 0.4s ease; }
+.diff-bar.active:nth-child(1) { background: #4CAF50; box-shadow: 0 0 6px rgba(76,175,80,0.5); }
+.diff-bar.active:nth-child(2) { background: #66BB6A; box-shadow: 0 0 6px rgba(76,175,80,0.4); }
+.diff-bar.active:nth-child(3) { background: #FFEB3B; box-shadow: 0 0 6px rgba(255,235,59,0.5); }
+.diff-bar.active:nth-child(4) { background: #FFD600; box-shadow: 0 0 6px rgba(255,214,0,0.4); }
+.diff-bar.active:nth-child(5) { background: #FF9800; box-shadow: 0 0 6px rgba(255,152,0,0.5); }
+.diff-bar.active:nth-child(6) { background: #F44336; box-shadow: 0 0 6px rgba(244,67,54,0.5); }
+.diff-bar.active:nth-child(7) { background: #9C27B0; box-shadow: 0 0 8px rgba(156,39,176,0.6); }
+.diff-label { font-size: 0.6em; color: #ffd700; font-weight: bold; text-shadow: 1px 1px 0 #000; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+
+#stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 6px 0; flex-shrink: 0; }
+.stat { background: rgba(0,0,0,0.55); padding: 6px 8px; border-radius: 10px; border: 1px solid rgba(255,215,0,0.2); position: relative; overflow: hidden; backdrop-filter: blur(4px); }
+.stat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.04), transparent); border-radius: 9px 9px 0 0; pointer-events: none; }
+.stat-label { font-size: 0.55em; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; color: #ffd700; margin-bottom: 1px; position: relative; z-index: 1; }
+.stat-value { font-size: 1.4em; font-weight: bold; color: #fff; position: relative; z-index: 1; text-shadow: 1px 1px 0 rgba(0,0,0,0.5); }
+#time-bar { position: absolute; bottom: 0; left: 0; height: 100%; background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00); opacity: 0.75; transition: width 0.2s linear; }
+
+/* ==================== CUSTOMER AREA ==================== */
+#customer-area {
+  position: relative; flex: 1; min-height: 200px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden; margin: 0 -12px;
+  background:
+    var(--bg-customer);
+  background-size:
+    var(--bg-customer-size, cover);
+  background-position:
+    var(--bg-customer-pos, center center);
+  animation: ambientPulse 6s ease-in-out infinite alternate;
+}
+@keyframes ambientPulse { 0% { filter: brightness(0.97); } 100% { filter: brightness(1.03); } }
+
+#customer-area::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 10%, rgba(255,200,100,0.12) 30%, rgba(255,200,100,0.08) 70%, transparent 90%); z-index: 5; pointer-events: none; }
+#customer-area::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 22px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0px, transparent 12px, rgba(0,0,0,0.08) 12px, rgba(0,0,0,0.08) 13px, transparent 13px, transparent 25px, rgba(255,255,255,0.03) 25px, rgba(255,255,255,0.03) 26px, transparent 26px, transparent 40px),
+    linear-gradient(180deg, #9B8565 0%, #8B7355 40%, #7a6348 60%, #6b5744 100%);
+  z-index: 4; pointer-events: none;
+  box-shadow: 0 -3px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.12), inset 0 -2px 6px rgba(0,0,0,0.2);
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Wall Menu Board */
+.wall-board {
   position: absolute;
-  bottom: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-top: 15px solid white;
+  top: 55px;
+  right: 12px;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.2;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,215,0,0.12);
+  border-radius: 5px;
+  padding: 6px 8px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  line-height: 1.3;
+  backdrop-filter: blur(2px);
+}
+.wall-board .board-label { font-size: 0.45em; color: #ffd700; letter-spacing: 2px; display: block; margin-bottom: 3px; font-weight: bold; }
+.wall-board .board-item { font-size: 0.35em; color: #ccc; display: block; }
+.wall-board .board-price { font-size: 0.35em; color: #ffcc66; display: block; margin-bottom: 2px; }
+
+
+
+/* Counter Sizzle / Heat shimmer */
+.counter-sizzle {
+  position: absolute;
+  bottom: 18px;
+  left: 15%;
+  right: 15%;
+  height: 25px;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(0deg, rgba(255,160,50,0.05) 0%, transparent 100%);
+  animation: sizzleWave 3s ease-in-out infinite alternate;
+}
+@keyframes sizzleWave {
+  0% { opacity: 0.3; transform: scaleY(0.8) scaleX(1); }
+  50% { opacity: 0.5; transform: scaleY(1.1) scaleX(0.95); }
+  100% { opacity: 0.3; transform: scaleY(0.9) scaleX(1.05); }
 }
 
-/* Customer type badge inside bubble */
-#customer-type {
-  font-size: 0.75em;
-  font-weight: bold;
-  padding: 4px 10px;
-  border-radius: 12px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  display: inline-block;
-  color: white;
+/* ==================== ORDER BUBBLE ==================== */
+#order-bubble { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.97); border-radius: 18px; padding: 10px 16px 7px; box-shadow: 0 6px 30px rgba(0,0,0,0.4), 0 0 40px rgba(0,0,0,0.15); min-width: 170px; max-width: 88%; z-index: 10; border: 1px solid rgba(255,255,255,0.8); }
+#order-bubble::after { content: ''; position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; border-top: 11px solid rgba(255,255,255,0.97); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
+#customer-type { font-size: 0.55em; font-weight: bold; padding: 3px 8px; border-radius: 10px; text-transform: uppercase; margin-bottom: 4px; display: inline-block; color: white; letter-spacing: 0.5px; }
+.type-normal { background: #000; }
+.type-angry { background: linear-gradient(135deg, #c51400, #a01000); }
+.type-vip { background: linear-gradient(135deg, #f39c12, #e67e22); box-shadow: 0 0 8px rgba(255,215,0,0.5); }
+.type-troll { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+.type-boss { background: #000; border: 2px solid #ff0000; box-shadow: 0 0 10px rgba(255,0,0,0.4); }
+.type-critic { background: linear-gradient(135deg, #1abc9c, #16a085); }
+#order-display { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; margin-bottom: 5px; min-height: 28px; }
+.order-item { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; padding: 3px 9px; border-radius: 9px; font-weight: bold; font-size: 0.85em; border: 2px solid #ff6600; box-shadow: 0 2px 5px rgba(0,0,0,0.12); transition: all 0.2s; }
+.order-item.completed { background: linear-gradient(135deg, #00cc44, #009933); opacity: 0.5; text-decoration: line-through; border-color: #007722; }
+.order-item.current { animation: currentPulse 0.6s infinite; box-shadow: 0 0 10px #ffd700; }
+@keyframes currentPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+#timer-bar-container { width: 100%; height: 5px; background: rgba(0,0,0,0.08); border-radius: 6px; overflow: hidden; }
+#order-timer-bar { height: 100%; background: linear-gradient(90deg, #ff0000, #ff6600, #ffff00, #00ff00); width: 100%; transition: width 0.05s linear; border-radius: 6px; }
+.timer-warning #order-timer-bar { animation: timerFlash 0.5s infinite; }
+@keyframes timerFlash { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ==================== CSS CHARACTER SYSTEM ==================== */
+.customer { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; align-items: flex-end; }
+.character { position: relative; width: 340px; height: 680px; filter: drop-shadow(0 8px 25px rgba(0,0,0,0.5)); display: flex; align-items: flex-end; justify-content: center; }
+.character img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+
+
+@keyframes steamFloat { 0% { transform: translateY(0) scale(0.8); opacity: 0.5; } 100% { transform: translateY(-25px) scale(1.3); opacity: 0; } }
+
+
+
+/* ==================== KEBAB PLATE ==================== */
+.kebab-plate { position: absolute; bottom: 20px; right: 18px; z-index: 5; width: 70px; height: 80px; pointer-events: none; }
+.plate-base { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 56px; height: 8px; background: linear-gradient(180deg, #eee 0%, #ccc 40%, #bbb 100%); border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
+.plate-base::before { content: ''; position: absolute; top: -2px; left: 8px; right: 8px; height: 4px; background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent); border-radius: 50%; }
+.kebab-stack { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column-reverse; align-items: center; gap: 2px; z-index: 1; }
+.kebab-layer-item { width: 36px; height: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.35); animation: layerDrop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.kebab-layer-item:first-child { border-radius: 4px 4px 6px 6px; }
+@keyframes layerDrop { 0% { transform: translateY(-25px) scaleY(0.3); opacity: 0; } 100% { transform: translateY(0) scaleY(1); opacity: 1; } }
+.layer-0 { background: linear-gradient(180deg, #A0522D, #8B4513); }
+.layer-1 { background: linear-gradient(180deg, #66BB6A, #4CAF50); }
+.layer-2 { background: linear-gradient(180deg, #ef5350, #e74c3c); }
+.layer-3 { background: linear-gradient(180deg, #FFD54F, #f1c40f); }
+.layer-4 { background: linear-gradient(180deg, #FF7043, #ff6b35); }
+.layer-5 { background: linear-gradient(180deg, #D7CCC8, #BCAAA4); }
+
+/* ==================== MENU SECTION ==================== */
+.menu-section {
+  flex-shrink: 0; position: relative; z-index: 2;
+  margin: 0 -12px; padding: 8px 12px 10px;
+  background:
+    var(--bg-menu, none),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 15px, rgba(0,0,0,0.08) 15px, rgba(0,0,0,0.08) 16px, transparent 16px, transparent 30px, rgba(255,255,255,0.02) 30px, rgba(255,255,255,0.02) 31px, transparent 31px, transparent 45px),
+    linear-gradient(180deg, #6b5744 0%, #5a4736 50%, #4d3a2a 100%);
+  border-top: 2px solid rgba(255,215,0,0.1);
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
 }
-
-.type-normal { background: #000000; }
-.type-angry { background: #c51400; }
-.type-vip { background: #f39c12; box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
-.type-troll { background: #9b59b6; }
-.type-boss { background: #000; border: 2px solid #ff0000; }
-.type-critic { background: #1abc9c; }
-
-/* Order items display */
-#order-display {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 10px;
-  min-height: 40px;
-}
-
-.order-item {
-  background: linear-gradient(135deg, #ffd700, #ffaa00);
-  color: #000;
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-weight: bold;
-  font-size: 1.1em;
-  border: 2px solid #ff6600;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-}
-
-.order-item.completed {
-  background: linear-gradient(135deg, #00dd00, #00aa00);
-  opacity: 0.6;
-  text-decoration: line-through;
-}
-
-.order-item.current {
-  animation: currentPulse 0.6s infinite;
-  box-shadow: 0 0 12px #ffd700;
-}
-
-@keyframes currentPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-}
-
-/* ==================== HORIZONTAL TIMER BAR INSIDE BUBBLE ==================== */
-#timer-bar-container {
-  width: 100%;
-  height: 10px;
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
-}
-
-#order-timer-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #ff0000 0%, #ff6600 25%, #ffff00 50%, #00ff00 100%);
-  width: 100%;
-  transition: width 0.05s linear;
-  border-radius: 10px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* Timer warning state */
-.timer-warning #order-timer-bar {
-  animation: timerFlash 0.5s infinite;
-}
-
-@keyframes timerFlash {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-/* ==================== MENU ==================== */
-#menu {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 5px;
-  position: absolute;  /* or fixed if you want it to stay visible on scroll */
-  bottom: 3px;           /* distance from top */
-  left: 50%;
-  transform: translateX(-50%); /* center horizontally */
-  width: 90%;
-height: 30%;}
-  
-
+#menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
 
 .item {
-  background: linear-gradient(135deg, #ffd700 0%, #f5f5f5 100%);
-  color: #000;
-  padding: px 14px;
-  border-radius: 18px;
-  cursor: pointer;
-  font-weight: bold;
-  border: 4px solid #ffd700;
-  transition: all 0.15s ease;
-  font-size: 1.15em;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-  min-height: 75px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.item:hover {
-  background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
-  transform: translateY(-3px) scale(1.03);
-  border-color: #ff6600;
-  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
-}
-
-.item:active {
-  transform: translateY(0) scale(0.98);
-}
-
-#bonus-zone {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-  min-height: 55px;
-  margin-bottom: 15px;
-}
-
-.bonus-btn {
-  background: linear-gradient(135deg, #ff6600 0%, #ff3300 100%);
-  color: #fff;
-  border: none;
-  padding: 14px 26px;
-  border-radius: 22px;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 1.05em;
-  border: 4px solid #ffd700;
-  box-shadow: 0 5px 15px rgba(255, 102, 0, 0.5);
-  transition: all 0.2s;
+  padding: 10px 4px; border-radius: 12px; cursor: pointer;
+  font-weight: bold; font-size: 0.82em; min-height: 52px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
   font-family: 'Arial Black', Arial, sans-serif;
+  transition: all 0.12s ease; position: relative; overflow: hidden;
+  border: 2px solid transparent;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
 }
+.item::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent); border-radius: 10px 10px 0 0; pointer-events: none; }
+.item[data-index="0"] { background: linear-gradient(180deg, #A0522D, #8B4513); color: #fff; border-color: #6B3410; box-shadow: 0 3px 10px rgba(139,69,19,0.5), inset 0 1px 0 rgba(255,255,255,0.12); }
+.item[data-index="0"]:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(139,69,19,0.7), inset 0 1px 0 rgba(255,255,255,0.12); border-color: #d4a574; }
+.item[data-index="1"] { background: linear-gradient(180deg, #66BB6A, #4CAF50); color: #fff; border-color: #388E3C; box-shadow: 0 3px 10px rgba(76,175,80,0.45), inset 0 1px 0 rgba(255,255,255,0.12); }
+.item[data-index="1"]:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(76,175,80,0.65); border-color: #a5d6a7; }
+.item[data-index="2"] { background: linear-gradient(180deg, #ef5350, #e74c3c); color: #fff; border-color: #c0392b; box-shadow: 0 3px 10px rgba(231,76,60,0.45), inset 0 1px 0 rgba(255,255,255,0.12); }
+.item[data-index="2"]:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(231,76,60,0.65); border-color: #ff8a80; }
+.item[data-index="3"] { background: linear-gradient(180deg, #FFD54F, #f1c40f); color: #3e2723; border-color: #f39c12; box-shadow: 0 3px 10px rgba(241,196,15,0.45), inset 0 1px 0 rgba(255,255,255,0.12); }
+.item[data-index="3"]:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(241,196,15,0.65); border-color: #fff176; }
+.item[data-index="4"] { background: linear-gradient(180deg, #FF7043, #ff6b35); color: #fff; border-color: #e64a19; box-shadow: 0 3px 10px rgba(255,107,53,0.45), inset 0 1px 0 rgba(255,255,255,0.12); }
+.item[data-index="4"]:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(255,107,53,0.65); border-color: #ffab91; }
+.item[data-index="5"] { background: linear-gradient(180deg, #D7CCC8, #BCAAA4); color: #3e2723; border-color: #A1887F; box-shadow: 0 3px 10px rgba(161,136,127,0.45), inset 0 1px 0 rgba(255,255,255,0.12); }
+.item[data-index="5"]:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(161,136,127,0.65); border-color: #EFEBE9; }
+.item:active { transform: translateY(2px) scale(0.96) !important; box-shadow: 0 1px 4px rgba(0,0,0,0.4) !important; }
+.item .item-icon { font-size: 1.4em; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2)); }
+.item .item-name { font-size: 0.6em; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+.item[data-index="3"] .item-name, .item[data-index="5"] .item-name { text-shadow: 0 1px 1px rgba(255,255,255,0.3); }
+.item.correct-flash { animation: itemCorrect 0.35s ease; }
+@keyframes itemCorrect { 0% { transform: scale(1); } 40% { transform: scale(0.92); filter: brightness(1.6); } 100% { transform: scale(1); } }
+.item.wrong-flash { animation: itemWrong 0.35s ease; }
+@keyframes itemWrong { 0% { transform: scale(1); } 40% { transform: scale(0.92); filter: brightness(0.4) saturate(0); } 100% { transform: scale(1); } }
 
-.bonus-btn:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.7);
-}
+/* ==================== GAME OVER ==================== */
+#game-over { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-gameover, linear-gradient(180deg, rgba(20,10,5,0.98) 0%, rgba(40,20,10,0.98) 50%, rgba(20,10,5,0.98) 100%)); padding: 30px 35px 35px; border-radius: 24px; border: 4px solid #ffd700; z-index: 2000; max-width: 92%; width: 400px; box-shadow: 0 0 60px rgba(255,215,0,0.4), 0 0 120px rgba(255,180,0,0.1), 0 20px 60px rgba(0,0,0,0.6); }
+#game-over::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100%; background: radial-gradient(ellipse 300px 200px at 50% 15%, rgba(255,215,0,0.06), transparent 70%), repeating-linear-gradient(90deg, transparent 0px, transparent 19px, rgba(255,215,0,0.02) 19px, rgba(255,215,0,0.02) 20px); pointer-events: none; border-radius: 20px; }
+.go-kebab { width: 40px; height: 80px; position: relative; margin: 0 auto 8px; transform: scale(0.7); }
+.go-kebab .stick { width: 4px; height: 80px; background: linear-gradient(#ccc,#999,#666); border-radius: 2px; position: absolute; left: 50%; transform: translateX(-50%); z-index: 1; }
+.go-kebab .layer { width: 34px; height: 10px; border-radius: 5px; position: absolute; left: 50%; transform: translateX(-50%); z-index: 2; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+.go-kebab .layer:nth-child(2) { top: 4px; background: #A0522D; }
+.go-kebab .layer:nth-child(3) { top: 16px; background: #4CAF50; }
+.go-kebab .layer:nth-child(4) { top: 28px; background: #e74c3c; }
+.go-kebab .layer:nth-child(5) { top: 40px; background: #f1c40f; }
+.go-kebab .layer:nth-child(6) { top: 52px; background: #A0522D; }
+.go-kebab .layer:nth-child(7) { top: 64px; background: #4CAF50; }
+#game-over h2 { font-size: 1.5em; margin-bottom: 10px; color: #ffd700; text-shadow: 2px 2px 0 #000; position: relative; letter-spacing: 1px; }
+#final-score { font-size: 3em; color: #ffd700; text-shadow: 3px 3px 0 #000, 0 0 20px rgba(255,215,0,0.4); margin: 8px 0; position: relative; font-weight: 900; }
+#performance-msg { position: relative; font-size: 1.1em; margin: 8px 0; color: #ffd700; text-shadow: 2px 2px 0 #000; }
+#stats-summary { margin: 14px 0 18px; line-height: 1.9; font-size: 0.95em; color: #ddd; position: relative; }
+#stats-summary strong { color: #ffd700; }
+.go-buttons { display: flex; justify-content: center; gap: 10px; position: relative; flex-wrap: wrap; }
+.retry-btn { background: linear-gradient(135deg, #ff8c00, #e67e00); color: #fff; border: none; padding: 14px 32px; border-radius: 22px; font-size: 1.15em; font-weight: bold; cursor: pointer; border: 3px solid #ffd700; box-shadow: 0 5px 18px rgba(255,140,0,0.35), 0 2px 0 #b86300; transition: all 0.15s ease; font-family: 'Arial Black', Arial, sans-serif; position: relative; overflow: hidden; letter-spacing: 0.5px; }
+.retry-btn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent); border-radius: 19px 19px 0 0; pointer-events: none; }
+.retry-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 7px 25px rgba(255,140,0,0.5), 0 2px 0 #b86300; }
+.go-back-btn { background: linear-gradient(135deg, #4a3728, #3a2718); color: #cc9966; border: 2px solid rgba(255,215,0,0.3); padding: 14px 28px; border-radius: 22px; font-size: 1.1em; font-weight: bold; cursor: pointer; font-family: 'Arial Black', Arial, sans-serif; transition: all 0.15s ease; letter-spacing: 0.5px; }
+.go-back-btn:hover { transform: translateY(-2px); border-color: rgba(255,215,0,0.6); color: #ffd700; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
-#game-over {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.97);
-  padding: 40px;
-  border-radius: 22px;
-  border: 6px solid #ffd700;
-  z-index: 2000;
-  max-width: 92%;
-  box-shadow: 0 0 60px rgba(255, 215, 0, 0.8);
-}
+/* ==================== PARTICLES ==================== */
+.particle { position: fixed; border-radius: 50%; pointer-events: none; z-index: 9999; animation: particleBurst 0.9s ease-out forwards; }
+@keyframes particleBurst { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; } }
 
-#game-over h2 {
-  font-size: 2.2em;
-  margin-bottom: 20px;
-  color: #ffd700;
-  text-shadow: 3px 3px 0 #000;
-}
-
-#final-score {
-  font-size: 4em;
-  color: #ffd700;
-  text-shadow: 4px 4px 0 #000, 0 0 20px #ffd700;
-  margin: 20px 0;
-}
-
-.retry-btn {
-  background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
-  color: #000;
-  border: none;
-  padding: 20px 45px;
-  border-radius: 28px;
-  font-size: 1.5em;
-  font-weight: bold;
-  cursor: pointer;
-  border: 5px solid #ffd700;
-  margin-top: 20px;
-  box-shadow: 0 8px 25px rgba(0, 255, 0, 0.5);
-  transition: all 0.2s;
-  font-family: 'Arial Black', Arial, sans-serif;
-  margin-right: 15px;
-}
-
-.retry-btn:hover {
-  transform: translateY(-3px) scale(1.05);
-}
-
+/* ==================== ANIMATIONS ==================== */
 .shake { animation: shake 0.35s; }
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25%, 75% { transform: translateX(-10px); }
-  50% { transform: translateX(10px); }
-}
-
+@keyframes shake { 0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)} }
 .flash-red { animation: flashRed 0.35s; }
-@keyframes flashRed {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.5) hue-rotate(-30deg); }
-}
-
+@keyframes flashRed { 0%,100%{filter:brightness(1)}50%{filter:brightness(1.5)hue-rotate(-25deg)} }
 .flash-green { animation: flashGreen 0.35s; }
-@keyframes flashGreen {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.5) hue-rotate(30deg); }
-}
+@keyframes flashGreen { 0%,100%{filter:brightness(1)}50%{filter:brightness(1.5)hue-rotate(25deg)} }
+.floating-text { position: fixed; font-size: 1.8em; font-weight: bold; text-shadow: 3px 3px 0 #000; pointer-events: none; z-index: 999; animation: floatUp 1.2s forwards; }
+@keyframes floatUp { 0%{opacity:1;transform:translateY(0)scale(1)}100%{opacity:0;transform:translateY(-90px)scale(1.3)} }
+.combo-fire { animation: comboBlaze 0.4s ease-in-out infinite alternate; }
+@keyframes comboBlaze { from{text-shadow:0 0 5px #ff6600,0 0 10px #ff3300}to{text-shadow:0 0 10px #ff9900,0 0 20px #ff6600,0 0 30px #ff3300} }
 
-#stats-summary {
-  margin: 25px 0;
-  line-height: 2.2;
-  font-size: 1.15em;
-  color: #fff;
-}
+.swipe-hint { text-align: center; font-size: 0.5em; color: rgba(255,215,0,0.3); letter-spacing: 2px; text-transform: uppercase; margin-top: 3px; display: none; }
+@media (pointer: coarse) { .swipe-hint { display: block; } }
 
-#stats-summary strong {
-  color: #ffd700;
-}
-
-.floating-text {
-  position: fixed;
-  font-size: 2.2em;
-  font-weight: bold;
-  text-shadow: 3px 3px 0 #000;
-  pointer-events: none;
-  z-index: 999;
-  animation: floatUp 1.2s forwards;
-}
-
-@keyframes floatUp {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-100px) scale(1.3); }
-}
-
-#difficulty-indicator {
-  position: fixed;
-  top: 5px;
-  right: 50px;
-  width: 250px;
-  height: 45px;
-  background: rgba(0, 0, 0, 0.35);
-  border-radius: 15px;
-  border: 3px solid #ffd700;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
-  display: flex;
-  overflow: hidden;
-  z-index: 50;
-}
-#difficulty-fill {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 0%;
-  border-radius: 12px;
-  transition: width 0.6s ease, background 0.6s ease;
-  z-index: 0;
-}
-
-
-
-.bar-segment {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.05);
-  margin: 0 1px;
-  border-radius: 10px;
-  z-index: 2;
-  pointer-events: none;
-}
-
-
-/* Active colors for each difficulty */
-.bar-segment.active.easy { background: #4CAF50; }        /* green */
-.bar-segment.active.medium { background: #FFEB3B; }      /* yellow */
-.bar-segment.active.hard { background: #FF9800; }        /* orange */
-.bar-segment.active.extreme { background: #F44336; }     /* red */
-.bar-segment.active.impossible { background: #9C27B0; }  /* purple */
-
-/* Label on top */
-#difficulty-indicator .label {
-  position: absolute;
-  width: 100%;
-  text-align: center;
-  font-size: 0.95em;
-  color: #fffb00;
-  font-weight: bold;
-  line-height: 25px;
-  text-shadow: 0 0 5px #ffd700;
-}
-
-#loading-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  
-  /* ADD YOUR IMAGE HERE */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999; 
-  transition: opacity 0.5s ease;
-}
-
-/* Optional: Add a dark tint so your yellow text stays readable */
-#loading-screen::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.5); /* Adjust 0.5 to make it darker/lighter */
-  z-index: -1;
-}
-
-.loader-content {
-  text-align: center;
-  color: #ffd700;
-  font-family: 'Arial Black', sans-serif;
-}
-
-.spinner {
-  width: 60px;
-  height: 60px;
-  border: 8px solid rgba(255, 215, 0, 0.2);
-  border-top: 8px solid #ffd700;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-#progress-bar-container {
-  width: 200px;
-  height: 10px;
-  background: #333;
-  border-radius: 5px;
-  margin-top: 15px;
-  overflow: hidden;
-}
-
-#loading-progress {
-  width: 0%;
-  height: 100%;
-  background: #ffd700;
-  transition: width 0.2s;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Hide everything else while loading */
-body.is-loading #welcome-screen, 
-body.is-loading #game-container {
-  display: none;
-}
-
-
-
-/* Mobile optimizations */
+/* ==================== RESPONSIVE ==================== */
 @media (max-width: 600px) {
-  .menu-btn { font-size: 1.2em; padding: 18px 35px; }
-  h1 { font-size: 1.7em; }
-  
-  #customer-area { height: 340px; }
-  .customer { width: 160px; height: 240px; bottom: 30px; }
-  .cust-boss { width: 190px; height: 280px; }
-  
-  #order-bubble { padding: 12px 15px 8px 15px; }
-  #order-display { font-size: 0.95em; }
-  
-  .item { font-size: 1.05em; padding: 20px 14px; min-height: 70px; }
-  .stat-value { font-size: 1.6em; }
+  .game-title { font-size: 2em; } .game-title-wrap::before { font-size: 2em; }
+  .menu-btn { font-size: 1.15em; padding: 15px 28px; }
+  .game-header h1 { font-size: 0.85em; }
+  .diff-bar { width: 12px; height: 14px; }
+  .stat-value { font-size: 1.2em; }
+  #stats { gap: 5px; margin: 4px 0; }
+  .stat { padding: 5px 6px; }
+  .item { min-height: 48px; font-size: 0.78em; padding: 8px 4px; border-radius: 10px; }
+  .item .item-icon { font-size: 1.3em; }
+  #customer-area { min-height: 160px; }
+  .character { transform: scale(0.78); transform-origin: bottom center; }
+  #order-bubble { padding: 7px 11px 5px; min-width: 140px; }
+  .order-item { font-size: 0.75em; padding: 3px 7px; }
+  #game-container { padding: 6px 10px 0; }
+  #menu { gap: 4px; }
+  .menu-section { padding: 6px 10px 8px; }
+  .kebab-plate { transform: scale(0.85); transform-origin: bottom right; }
+  .wall-board { display: none; }
 }
-
 @media (max-width: 400px) {
-  #game-container { padding: 12px; }
-  .stat { padding: 10px; }
-  #customer-area { height: 300px; }
-  .customer { width: 140px; height: 220px; }
-  .item { min-height: 68px; font-size: 1em; padding: 18px 12px; }
+  .game-header h1 { font-size: 0.75em; }
+  .game-title { font-size: 1.6em; } .game-title-wrap::before { font-size: 1.6em; }
+  .diff-bar { width: 10px; height: 12px; } .diff-label { font-size: 0.5em; }
+  .stat-value { font-size: 1em; }
+  .character { transform: scale(0.65); transform-origin: bottom center; }
+  #customer-area { min-height: 130px; }
+  .item { min-height: 42px; font-size: 0.72em; }
+  .item .item-icon { font-size: 1.1em; } .item .item-name { font-size: 0.5em; }
+  .kebab-plate { transform: scale(0.7); transform-origin: bottom right; }
+  .go-kebab { transform: scale(0.55); }
+  #final-score { font-size: 2.5em; }
+  .retry-btn { padding: 12px 24px; font-size: 1em; }
+  .go-back-btn { padding: 12px 20px; font-size: 0.95em; }
+}
+@media (max-height: 700px) {
+  #customer-area { min-height: 110px; }
+  .character { transform: scale(0.62); transform-origin: bottom center; }
+  .game-header { padding: 3px 6px; } .game-header h1 { font-size: 0.8em; }
+  #stats { margin: 3px 0; gap: 4px; }
+  .stat { padding: 3px 5px; border-radius: 8px; }
+  .stat-label { font-size: 0.45em; } .stat-value { font-size: 1em; }
+  #time-bar { display: none; }
+  .menu-section { padding: 4px 8px 6px; }
+  #menu { gap: 3px; }
+  .item { min-height: 34px; padding: 5px 3px; font-size: 0.68em; }
+  .item .item-icon { font-size: 1em; } .item .item-name { font-size: 0.45em; }
+  .diff-bar { width: 9px; height: 10px; }
+  .order-item { font-size: 0.65em; }
+  #order-bubble { padding: 5px 8px 4px; min-width: 120px; }
+  .kebab-plate { display: none; }
+  .wall-board { display: none; }
+  #game-over { padding: 20px 25px; }
+  .go-kebab { display: none; }
+}
+@media (min-width: 650px) {
+  #game-container { padding: 12px 0 0; }
+  #customer-area { margin: 0; border-radius: 12px; }
+  #customer-area::after { border-radius: 0 0 12px 12px; }
+  .menu-section { border-radius: 0; }
 }
 </style>
 </head>
 <body>
-  <audio id="bg-music" loop>
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
-  <div id="loading-screen">
+
+<div id="loading-screen">
   <div class="loader-content">
-    <div class="spinner"></div>
-    <p>PRÉPARATION DU KEBAB...</p>
-    <div id="progress-bar-container">
-      <div id="loading-progress"></div>
+    <div class="loader-kebab">
+      <div class="stick"></div>
+      <div class="layer"></div><div class="layer"></div><div class="layer"></div>
+      <div class="layer"></div><div class="layer"></div><div class="layer"></div>
+    </div>
+    <p>PRÉPARATION DU CRISPY KEBAB...</p>
+    <div id="progress-bar-container"><div id="loading-progress"></div></div>
+  </div>
+</div>
+
+<audio id="bg-music" loop><source src="music.mp3" type="audio/mpeg"></audio>
+
+<div id="welcome-screen">
+  <div class="string-lights">
+    <div class="wire"></div>
+    <div class="bulb" style="left:5%;animation-delay:0s;"></div>
+    <div class="bulb" style="left:18%;animation-delay:0.4s;"></div>
+    <div class="bulb" style="left:31%;animation-delay:0.8s;"></div>
+    <div class="bulb" style="left:44%;animation-delay:0.2s;"></div>
+    <div class="bulb" style="left:57%;animation-delay:0.6s;"></div>
+    <div class="bulb" style="left:70%;animation-delay:1s;"></div>
+    <div class="bulb" style="left:83%;animation-delay:0.3s;"></div>
+    <div class="bulb" style="left:95%;animation-delay:0.7s;"></div>
+  </div>
+  <div class="welcome-content">
+    
+    <div class="game-title-wrap"><h1 class="game-title">CRISPY KEBAB</h1></div>
+    <div class="menu-buttons">
+      <button class="menu-btn" onclick="showGame()">🎮 JOUER</button>
+      <button class="menu-btn secondary" onclick="showScores()">🏆 MEILLEURS SCORES</button>
+      <button class="menu-btn exit" onclick="exitGame()">🚪 QUITTER</button>
     </div>
   </div>
 </div>
 
-<!-- WELCOME SCREEN -->
-<div id="welcome-screen">
-  <div class="menu-buttons">
-    <button class="menu-btn" onclick="showGame()">JOUER</button>
-    <button class="menu-btn secondary" onclick="showScores()">MEILLEURS SCORES</button>
-    <button class="menu-btn exit" onclick="exitGame()">QUITTER</button>
-  </div>
-</div>
-
-<!-- SCORES SCREEN -->
 <div id="scores-screen">
   <div class="scores-container">
     <h2 class="scores-title">🏆 MEILLEURS SCORES 🏆</h2>
@@ -801,857 +473,379 @@ body.is-loading #game-container {
   </div>
 </div>
 
-<!-- GAME SCREEN -->
 <div id="game-container">
-  <h1>.</h1>  
-  <div id="stats">
-    <div class="stat">
-      <div class="stat-content">
-        <div class="stat-label">Score</div>
-        <span class="stat-value" id="score">0</span>
+  <div class="game-header">
+    <h1>🥙 CRISPY KEBAB</h1>
+    <div id="difficulty-indicator">
+      <div class="diff-bars">
+        <div class="diff-bar"></div><div class="diff-bar"></div><div class="diff-bar"></div>
+        <div class="diff-bar"></div><div class="diff-bar"></div><div class="diff-bar"></div><div class="diff-bar"></div>
       </div>
-    </div>
-    <div class="stat">
-      <div class="stat-content">
-        <div class="stat-label">Temps</div>
-        <span class="stat-value" id="time">90</span>
-      </div>
-      <div id="time-bar"></div>
-    </div>
-    <div class="stat">
-      <div class="stat-content">
-        <div class="stat-label">Combo</div>
-        <span class="stat-value" id="combo">0x</span>
-      </div>
+      <div class="diff-label">Easy</div>
     </div>
   </div>
 
-  <!-- CUSTOMER AREA - NO BOX -->
+  <div id="stats">
+    <div class="stat"><div class="stat-label">Score</div><span class="stat-value" id="score">0</span></div>
+    <div class="stat"><div class="stat-label">Temps</div><span class="stat-value" id="time">60</span><div id="time-bar"></div></div>
+    <div class="stat"><div class="stat-label">Combo</div><span class="stat-value" id="combo">0x</span></div>
+  </div>
+
   <div id="customer-area">
-    <!-- White order bubble with horizontal timer -->
+    <!-- Ambient floating particles -->
+    <div class="ambient-particles" id="ambient-particles"></div>
+
+    <!-- Wall menu board decoration -->
+    <div class="wall-board">
+      <span class="board-label">MENU</span>
+      <span class="board-item">Kebab Classique</span><span class="board-price">7.90€</span>
+      <span class="board-item">Crispy Kebab</span><span class="board-price">8.90€</span>
+      <span class="board-item">Kebab Supreme</span><span class="board-price">10.90€</span>
+    </div>
+
     <div id="order-bubble">
       <div id="customer-type" class="type-normal">Client Normal</div>
       <div id="order-display">Prêt à servir!</div>
-      <div id="timer-bar-container">
-        <div id="order-timer-bar"></div>
-      </div>
+      <div id="timer-bar-container"><div id="order-timer-bar"></div></div>
     </div>
-    
-    <!-- Customer character floating freely -->
-    <div class="customer cust-normal"></div>
+
+    <div class="customer"></div>
+
+    <!-- Counter sizzle -->
+    <div class="counter-sizzle"></div>
+
+    <!-- Kebab Plate -->
+    <div class="kebab-plate">
+      <div class="plate-base"></div>
+      <div class="kebab-stack" id="kebab-stack"></div>
+    </div>
   </div>
 
-  <div id="bonus-zone"></div>
-  <div id="menu"></div>
-</div>
-
-<div id="difficulty-indicator">
-  <div id="difficulty-fill"></div>
-
-  <div class="bar-segment easy"></div>
-  <div class="bar-segment medium"></div>
-  <div class="bar-segment hard"></div>
-  <div class="bar-segment extreme"></div>
-  <div class="bar-segment impossible"></div>
-  <div class="label">Difficulty: Easy</div>
-</div>
-
- <span id="diff-level">1</span> / 7
+  <div class="menu-section">
+    <div id="menu"></div>
+  </div>
 </div>
 
 <div id="game-over">
-  <h2>🏁 SERVICE TERMINÉ! 🏁</h2>
+  <div class="go-kebab">
+    <div class="stick"></div>
+    <div class="layer"></div><div class="layer"></div><div class="layer"></div>
+    <div class="layer"></div><div class="layer"></div><div class="layer"></div>
+  </div>
+  <h2>SERVICE TERMINE</h2>
   <div id="final-score">0</div>
-  <p id="performance-msg" style="font-size: 1.3em; margin: 18px 0; color: #ffd700;"></p>
+  <p id="performance-msg" style="font-size:1.1em;margin:8px 0;color:#ffd700;"></p>
   <div id="stats-summary"></div>
-  <button class="retry-btn" onclick="startGame()">🔄 REJOUER</button>
-  <button class="back-btn" onclick="backToMenu()">← MENU</button>
+  <div class="go-buttons">
+    <button class="retry-btn" onclick="startGame()">\uD83D\uDD04 REJOUER</button>
+    <button class="go-back-btn" onclick="backToMenu()">\u2190 MENU</button>
+  </div>
 </div>
 
 <script>
-// ==================== BEST SCORES SYSTEM ====================
-const BestScores = {
-  scores: [],
-  maxScores: 10,
-  
-  init() {
-    this.loadScores();
-  },
-  
-  loadScores() {
-    try {
-      const saved = localStorage.getItem('empireKababScores');
-      this.scores = saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      console.error('Failed to load scores:', e);
-      this.scores = [];
-    }
-  },
-  
-  saveScores() {
-    try {
-      localStorage.setItem('empireKababScores', JSON.stringify(this.scores));
-    } catch (e) {
-      console.error('Failed to save scores:', e);
-    }
-  },
-  
-  addScore(score, difficulty, orders, combo) {
-    const newScore = {
-      points: score,
-      difficulty: difficulty,
-      orders: orders,
-      combo: combo,
-      date: new Date().toLocaleDateString('fr-FR')
-    };
-    
-    this.scores.push(newScore);
-    this.scores.sort((a, b) => b.points - a.points);
-    this.scores = this.scores.slice(0, this.maxScores);
-    this.saveScores();
-  },
-  
-  displayScores() {
-    const list = document.getElementById('score-list');
-    
-    if (this.scores.length === 0) {
-      list.innerHTML = '<div class="no-scores">Aucun score enregistré.<br>Soyez le premier!</div>';
-      return;
-    }
-    
-    list.innerHTML = this.scores.map((score, index) => `
-      <div class="score-item">
-        <div class="score-rank">${index + 1}</div>
-        <div class="score-details">
-          <div class="score-points">${score.points} pts</div>
-          <div class="score-info">
-            Difficulté: ${score.difficulty} | Commandes: ${score.orders} | Combo: ${score.combo}x<br>
-            ${score.date}
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
-};
-
-// ==================== AUDIO SYSTEM ====================
-const AudioSystem = {
-  context: null,
-  enabled: false,
-  unlocked: false,
-  volume: 0.3,
-  
-  init() {
-    if (this.enabled) return;
-    try {
-      this.context = new (window.AudioContext || window.webkitAudioContext)();
-      this.enabled = true;
-    } catch(e) {
-      console.warn('Audio not supported:', e);
-    }
-  },
-  
-  unlock() {
-    if (this.unlocked || !this.context) return;
-    this.context.resume().then(() => { 
-      this.unlocked = true; 
-    });
-  },
-  
-  play(freq, duration, type = 'sine', volume = 0.3) {
-    if (!this.enabled || !this.unlocked) return;
-    try {
-      const osc = this.context.createOscillator();
-      const gain = this.context.createGain();
-      osc.connect(gain);
-      gain.connect(this.context.destination);
-      osc.frequency.value = freq;
-      osc.type = type;
-      gain.gain.setValueAtTime(volume * this.volume, this.context.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + duration);
-      osc.start();
-      osc.stop(this.context.currentTime + duration);
-    } catch(e) {
-      console.warn('Audio play failed:', e);
-    }
-  },
-  
-  success() { 
-    this.play(523.25, 0.08); 
-    setTimeout(() => this.play(659.25, 0.12), 80); 
-  },
-  
-  error() { 
-    this.play(180, 0.15, 'sawtooth', 0.15); 
-  },
-  
-  combo() { 
-    this.play(880, 0.08); 
-    setTimeout(() => this.play(1046.5, 0.08), 60); 
-  },
-  
-  warning() { 
-    this.play(300, 0.1, 'square', 0.2); 
-  }
-};
-
-// ==================== GAME CONFIG ====================
-'use strict';
-
-// ==================== GAME CONFIG ====================
+// ==================== CONFIG ====================
 const CONFIG = {
-  ITEMS: ["🍗 Chicken", "🥩 Meat", "🌶️ Pain Pita", "🧀 Cheese", "🌯 Libanais", "🍖 Double"],
-  ITEM_NAMES: ["Chicken", "Meat", "Pain Pita", "Cheese", "Libanais", "Double"],
-  
+  ITEMS: [
+    { icon: '\uD83E\uDD69', name: 'Viande' },
+    { icon: '\uD83E\uDD6C', name: 'Salade' },
+    { icon: '\uD83C\uDF45', name: 'Tomate' },
+    { icon: '\uD83E\uDDC0', name: 'Fromage' },
+    { icon: '\uD83C\uDF36', name: 'Harissa' },
+    { icon: '\uD83E\uDD56', name: 'Pain' }
+  ],
+  ITEM_NAMES: ['Viande', 'Salade', 'Tomate', 'Fromage', 'Harissa', 'Pain'],
+  LAYER_CLASSES: ['layer-0', 'layer-1', 'layer-2', 'layer-3', 'layer-4', 'layer-5'],
   CUSTOMER_TYPES: {
-    NORMAL: { 
-      class: 'cust-normal', 
-      name: 'Client Normal', 
-      scoreMulti: 1, 
-      color: 'type-normal' 
-    },
-    ANGRY: { 
-      class: 'cust-angry', 
-      name: 'Client Énervé', 
-      scoreMulti: 1.2, 
-      penalty: 7, 
-      color: 'type-angry' 
-    },
-    VIP: { 
-      class: 'cust-vip', 
-      name: 'Client VIP', 
-      scoreMulti: 1.5, 
-      color: 'type-vip' 
-    },
-    TROLL: { 
-      class: 'cust-troll', 
-      name: 'Troll', 
-      scoreMulti: 0.7, 
-      fake: true, 
-      color: 'type-troll' 
-    },
-    BOSS: { 
-      class: 'cust-boss', 
-      name: 'BOSS RUSH', 
-      scoreMulti: 2, 
-      color: 'type-boss' 
-    },
-    CRITIC: { 
-      class: 'cust-critic', 
-      name: 'Critique', 
-      scoreMulti: 1.8, 
-      perfectOnly: true, 
-      color: 'type-critic' 
-    }
+    NORMAL: { id: 'NORMAL', name: 'Client Normal', scoreMulti: 1, color: 'type-normal' },
+    ANGRY: { id: 'ANGRY', name: 'Client \u00C9nerv\u00E9', scoreMulti: 1.5, penalty: 8, color: 'type-angry' },
+    VIP: { id: 'VIP', name: 'Client VIP', scoreMulti: 2.5, color: 'type-vip' },
+    TROLL: { id: 'TROLL', name: 'Troll', scoreMulti: 0.8, fake: true, color: 'type-troll' },
+    BOSS: { id: 'BOSS', name: 'BOSS RUSH', scoreMulti: 4, color: 'type-boss' },
+    CRITIC: { id: 'CRITIC', name: 'Critique', scoreMulti: 3, perfectOnly: true, color: 'type-critic' }
   },
-  
-  NORMAL_CUSTOMER_IMAGES: ["c1.png", "c3.png", "c4.png"],
-  
-  BASE_TIME: 60,
-  BASE_WAIT_TIME: 12,
-  MIN_WAIT_TIME: 5,
-  MAX_DIFFICULTY: 7,
-  ORDERS_PER_DIFFICULTY: 8  // Increase difficulty every 8 orders instead of 5
+  BASE_TIME: 60, BASE_WAIT_TIME: 15, MIN_WAIT_TIME: 5, MAX_DIFFICULTY: 7
 };
+
+
+const CHAR_IMAGES = {
+  NORMAL: ['c1.png', 'c2.png', 'c3.png', 'c4.png','c5.png','c6.png'],
+  ANGRY: 'c3.png',
+  VIP: 'c3.png',
+  TROLL: 'joker.png',
+  BOSS: 'boss.png',
+  CRITIC: 'critic.png'
+};
+
+function pickImage(typeId) {
+  const img = CHAR_IMAGES[typeId];
+  if (!img) return 'c1.png';
+  if (Array.isArray(img)) return img[Math.floor(Math.random() * img.length)];
+  return img;
+}
+
+function buildCharacter(typeId) {
+  const img = pickImage(typeId);
+  return `<div class="character"><img src="${img}" alt="" draggable="false"></div>`;
+}
 
 // ==================== GAME STATE ====================
 let gameState = {
-  score: 0,
-  time: CONFIG.BASE_TIME,
-  combo: 0,
-  maxCombo: 0,
-  currentOrder: [],
-  currentOrderIndex: 0,
-  currentCustomer: null,
-  orderTimer: null,
-  orderTimeLeft: 0,
-  orderTimeMax: 0,
-  gameTimer: null,
-  totalOrders: 0,
-  mistakeCount: 0,
-  difficulty: 1,
-  isGameOver: false
+  score: 0, time: CONFIG.BASE_TIME, combo: 0, maxCombo: 0,
+  currentOrder: [], currentOrderIndex: 0, currentCustomer: null,
+  orderTimer: null, orderTimeLeft: 0, orderTimeMax: 0,
+  gameTimer: null, totalOrders: 0, mistakeCount: 0,
+  difficulty: 1, customerTimeout: null, isGameOver: false
 };
 
-// ==================== UI ELEMENTS ====================
+// ==================== AUDIO ====================
+const AudioSystem = {
+  context: null, enabled: false, unlocked: false,
+  init() { if (this.enabled) return; try { this.context = new (window.AudioContext || window.webkitAudioContext)(); this.enabled = true; } catch(e) {} },
+  unlock() { if (this.unlocked || !this.context) return; this.context.resume().then(() => { this.unlocked = true; }); },
+  play(f,d,t='sine',v=0.3) { if(!this.enabled||!this.unlocked)return; try{ const o=this.context.createOscillator(),g=this.context.createGain(); o.connect(g); g.connect(this.context.destination); o.frequency.value=f; o.type=t; g.gain.setValueAtTime(v,this.context.currentTime); g.gain.exponentialRampToValueAtTime(0.01,this.context.currentTime+d); o.start(); o.stop(this.context.currentTime+d); }catch(e){} },
+  success() { this.play(523.25,0.08); setTimeout(()=>this.play(659.25,0.12),80); },
+  error() { this.play(180,0.15,'sawtooth',0.2); },
+  combo() { this.play(880,0.08); setTimeout(()=>this.play(1046.5,0.08),60); },
+  warning() { this.play(300,0.1,'square',0.2); }
+};
+
+// ==================== UI REFS ====================
 const UI = {
-  score: document.getElementById('score'),
-  time: document.getElementById('time'),
-  combo: document.getElementById('combo'),
-  customer: document.querySelector('.customer'),
-  customerType: document.getElementById('customer-type'),
-  orderDisplay: document.getElementById('order-display'),
-  orderTimerBar: document.getElementById('order-timer-bar'),
-  timerContainer: document.getElementById('timer-bar-container'),
-  orderBubble: document.getElementById('order-bubble'),
-  menu: document.getElementById('menu'),
-  gameOver: document.getElementById('game-over'),
-  finalScore: document.getElementById('final-score'),
-  performanceMsg: document.getElementById('performance-msg'),
-  statsSummary: document.getElementById('stats-summary'),
-  timeBar: document.getElementById('time-bar')
+  score: document.getElementById('score'), time: document.getElementById('time'),
+  combo: document.getElementById('combo'), customer: document.querySelector('.customer'),
+  customerType: document.getElementById('customer-type'), orderDisplay: document.getElementById('order-display'),
+  orderTimerBar: document.getElementById('order-timer-bar'), timerContainer: document.getElementById('timer-bar-container'),
+  menu: document.getElementById('menu'), gameOver: document.getElementById('game-over'),
+  finalScore: document.getElementById('final-score'), performanceMsg: document.getElementById('performance-msg'),
+  statsSummary: document.getElementById('stats-summary'), timeBar: document.getElementById('time-bar')
 };
 
-// ==================== SCREEN NAVIGATION ====================
+// ==================== BEST SCORES ====================
+const BestScores = {
+  scores: [], maxScores: 10,
+  init() { this.loadScores(); },
+  loadScores() { this.scores = JSON.parse(localStorage.getItem('crispyKebabScores')||'[]'); },
+  saveScores() { localStorage.setItem('crispyKebabScores',JSON.stringify(this.scores)); },
+  addScore(s,d,o,c) { this.scores.push({points:s,difficulty:d,orders:o,combo:c,date:new Date().toLocaleDateString('fr-FR')}); this.scores.sort((a,b)=>b.points-a.points); this.scores=this.scores.slice(0,this.maxScores); this.saveScores(); },
+  displayScores() {
+    const list = document.getElementById('score-list');
+    if (!this.scores.length) { list.innerHTML='<div class="no-scores">Aucun score enregistr\u00E9.<br>Soyez le premier!</div>'; return; }
+    list.innerHTML=this.scores.map((s,i)=>'<div class="score-item"><div class="score-rank">'+(i+1)+'</div><div class="score-details"><div class="score-points">'+s.points+' pts</div><div class="score-info">Difficult\u00E9: '+s.difficulty+' | Commandes: '+s.orders+' | Combo: '+s.combo+'x<br>'+s.date+'</div></div></div>').join('');
+  }
+};
+
+// ==================== AMBIENT PARTICLES ====================
+function createAmbientParticles() {
+  const container = document.getElementById('ambient-particles');
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'ap';
+    const size = 2 + Math.random() * 4;
+    p.style.cssText = 'left:'+(Math.random()*96+2)+'%;animation-duration:'+(8+Math.random()*12)+'s;animation-delay:'+(Math.random()*12)+'s;width:'+size+'px;height:'+size+'px;opacity:'+(0.15+Math.random()*0.25);
+    container.appendChild(p);
+  }
+}
+
+// ==================== LOADING ====================
 window.addEventListener('load', function() {
-  const loader = document.getElementById('loading-screen');
-  const progress = document.getElementById('loading-progress');
-  
-  progress.style.width = "100%";
-  
+  document.getElementById('loading-progress').style.width = '100%';
   setTimeout(() => {
-    loader.style.opacity = '0';
-    setTimeout(() => {
-      loader.style.display = 'none';
-    }, 500);
+    const l = document.getElementById('loading-screen');
+    l.style.opacity = '0';
+    setTimeout(() => l.style.display = 'none', 500);
   }, 1000);
 });
 
-function showWelcome() {
-  document.getElementById('welcome-screen').classList.remove('hidden');
-  document.getElementById('scores-screen').classList.remove('show');
-  document.getElementById('game-container').classList.remove('active');
-  stopGame();
-}
+// ==================== NAVIGATION ====================
+function showWelcome() { document.getElementById('welcome-screen').classList.remove('hidden'); document.getElementById('scores-screen').classList.remove('show'); document.getElementById('game-container').classList.remove('active'); stopGame(); }
+function showScores() { BestScores.displayScores(); document.getElementById('welcome-screen').classList.add('hidden'); document.getElementById('scores-screen').classList.add('show'); document.getElementById('game-container').classList.remove('active'); }
+function showGame() { document.getElementById('welcome-screen').classList.add('hidden'); document.getElementById('scores-screen').classList.remove('show'); document.getElementById('game-container').classList.add('active'); const m=document.getElementById('bg-music'); if(m){m.volume=0.5;m.play().catch(()=>{});} startGame(); }
+function backToMenu() { document.getElementById('game-over').style.display='none'; showWelcome(); }
+function exitGame() { if(confirm('Voulez-vous vraiment quitter?')){window.close();setTimeout(()=>alert('Veuillez fermer cette fen\u00EAtre manuellement.'),100);} }
 
-function showScores() {
-  BestScores.displayScores();
-  document.getElementById('welcome-screen').classList.add('hidden');
-  document.getElementById('scores-screen').classList.add('show');
-  document.getElementById('game-container').classList.remove('active');
-}
-
-function showGame() {
-  document.getElementById('welcome-screen').classList.add('hidden');
-  document.getElementById('scores-screen').classList.remove('show');
-  document.getElementById('game-container').classList.add('active');
-  
-  const music = document.getElementById('bg-music');
-  if (music) {
-    music.volume = 0.3;
-    music.play().catch(error => {
-      console.log("Music playback requires user interaction");
-    });
-  }
-
-  startGame();
-}
-
-function backToMenu() {
-  document.getElementById('game-over').style.display = 'none';
-  showWelcome();
-}
-
-function exitGame() {
-  if (confirm('Voulez-vous vraiment quitter?')) {
-    window.close();
-    setTimeout(() => alert('Veuillez fermer cette fenêtre manuellement.'), 100);
-  }
-}
-
-// ==================== INITIALIZATION ====================
+// ==================== MENU ====================
 function initMenu() {
   UI.menu.innerHTML = '';
-  CONFIG.ITEMS.forEach((item, index) => {
+  CONFIG.ITEMS.forEach((item, i) => {
     const div = document.createElement('div');
     div.className = 'item';
-    div.textContent = item;
-    div.dataset.index = index;
-    div.onclick = () => {
-      AudioSystem.unlock();
-      serveItem(index);
-    };
+    div.dataset.index = i;
+    div.innerHTML = '<span class="item-icon">'+item.icon+'</span><span class="item-name">'+item.name+'</span>';
+    div.onclick = () => { AudioSystem.unlock(); serveItem(i, div); };
     UI.menu.appendChild(div);
   });
 }
 
-// ==================== DIFFICULTY SYSTEM - FIXED ====================
-function getWaitTime() {
-  // More gradual reduction: 1.5s per difficulty level
-  const timeReduction = (gameState.difficulty - 1) * 1.5;
-  return Math.max(CONFIG.MIN_WAIT_TIME, CONFIG.BASE_WAIT_TIME - timeReduction);
-}
+// ==================== DIFFICULTY ====================
+function getWaitTime() { return Math.max(CONFIG.MIN_WAIT_TIME, CONFIG.BASE_WAIT_TIME-(gameState.difficulty-1)*2); }
+function getOrderComplexity() { return Math.min(1+Math.floor(gameState.difficulty/2),5); }
+function setDifficulty(l) { const b=document.querySelectorAll('.diff-bar'),lb=['Easy','Easy','Medium','Medium','Hard','Extreme','Impossible']; b.forEach((x,i)=>x.classList.toggle('active',i<l)); document.querySelector('.diff-label').textContent=lb[l-1]; }
+function increaseDifficulty() { if(gameState.difficulty<CONFIG.MAX_DIFFICULTY){gameState.difficulty++;setDifficulty(gameState.difficulty);showFloatingText('\u26A1 DIFFICULT\u00C9 '+gameState.difficulty+'!','#ffd700');} }
 
-function getOrderComplexity() {
-  // Start at 2 items, add 1 item every 2 difficulty levels
-  // Max complexity is 4 items (realistic for a fast food game)
-  if (gameState.difficulty <= 1) return 2;
-  if (gameState.difficulty <= 3) return 3;
-  if (gameState.difficulty <= 5) return 4;
-  return 5; // Maximum 5 items for extreme difficulty
-}
+// ==================== KEBAB BUILDING ====================
+let servedLayers = [];
+function resetKebab() { servedLayers=[]; const s=document.getElementById('kebab-stack'); if(s) s.innerHTML=''; }
+function addKebabLayer(idx) { servedLayers.push(idx); const s=document.getElementById('kebab-stack'); if(!s)return; const l=document.createElement('div'); l.className='kebab-layer-item '+(CONFIG.LAYER_CLASSES[idx]||'layer-0'); s.appendChild(l); }
 
-function increaseDifficulty() {
-  if (gameState.difficulty < CONFIG.MAX_DIFFICULTY) {
-    gameState.difficulty++;
-    setDifficulty(gameState.difficulty);
-    showFloatingText(`⚡ NIVEAU ${gameState.difficulty}!`, '#ffd700');
+// ==================== MOOD ====================
+function updateMood(pct) {}
+
+// ==================== PARTICLES ====================
+function spawnParticles(x,y,colors,count=14) {
+  for(let i=0;i<count;i++) {
+    const p=document.createElement('div'); p.className='particle';
+    const s=Math.random()*8+3,a=Math.random()*Math.PI*2,d=Math.random()*130+30,c=colors[Math.floor(Math.random()*colors.length)];
+    p.style.cssText='left:'+x+'px;top:'+y+'px;width:'+s+'px;height:'+s+'px;background:'+c+';--dx:'+(Math.cos(a)*d)+'px;--dy:'+(Math.sin(a)*d-20)+'px;border-radius:'+(Math.random()>0.5?'50%':'2px');
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),950);
   }
 }
+function particlesAtElement(el,colors,count) { if(!el)return; const r=el.getBoundingClientRect(); spawnParticles(r.left+r.width/2,r.top+r.height/2,colors,count); }
 
-function setDifficulty(level) {
-  const fill = document.getElementById("difficulty-fill");
-  const label = document.querySelector("#difficulty-indicator .label");
-
-  if (!fill || !label) return;
-
-  const maxLevel = CONFIG.MAX_DIFFICULTY;
-  const percent = Math.min((level / maxLevel) * 100, 100);
-
-  fill.style.width = percent + "%";
-
-  // More realistic difficulty labels
-  if (level <= 1) {
-    fill.style.background = "#4CAF50"; // green
-    label.textContent = "Niveau: Débutant";
-  } else if (level <= 2) {
-    fill.style.background = "#8BC34A"; // light green
-    label.textContent = "Niveau: Facile";
-  } else if (level <= 4) {
-    fill.style.background = "#FFEB3B"; // yellow
-    label.textContent = "Niveau: Normal";
-  } else if (level <= 5) {
-    fill.style.background = "#FF9800"; // orange
-    label.textContent = "Niveau: Difficile";
-  } else if (level <= 6) {
-    fill.style.background = "#F44336"; // red
-    label.textContent = "Niveau: Expert";
-  } else {
-    fill.style.background = "#9C27B0"; // purple
-    label.textContent = "Niveau: Maître";
-  }
-}
-
-// ==================== CUSTOMER SYSTEM - FIXED ====================
+// ==================== CUSTOMER ====================
 function spawnCustomer() {
-  if (gameState.isGameOver) return;
-  
-  clearInterval(gameState.orderTimer);
-  UI.timerContainer.classList.remove('timer-warning');
-  
-  let type;
-  const rand = Math.random() * 100; // Fixed: was * 1, now * 100 for percentages
-  const diff = gameState.difficulty;
-  
-  // More realistic customer distribution
-  if (diff <= 1) {
-    // Level 1: Mostly normal customers
-    type = rand < 90 ? 'NORMAL' : 'ANGRY';
-  } else if (diff <= 2) {
-    // Level 2: Some angry customers appear
-    type = rand < 75 ? 'NORMAL' : (rand < 95 ? 'ANGRY' : 'VIP');
-  } else if (diff <= 4) {
-    // Level 3-4: Balanced mix
-    if (rand < 55) type = 'NORMAL';
-    else if (rand < 85) type = 'ANGRY';
-    else if (rand < 97) type = 'VIP';
-    else type = 'TROLL';
-  } else if (diff <= 6) {
-    // Level 5-6: More challenging customers
-    if (rand < 40) type = 'NORMAL';
-    else if (rand < 70) type = 'ANGRY';
-    else if (rand < 85) type = 'VIP';
-    else if (rand < 93) type = 'TROLL';
-    else if (rand < 98) type = 'BOSS';
-    else type = 'CRITIC';
-  } else {
-    // Level 7: Maximum challenge
-    if (rand < 30) type = 'NORMAL';
-    else if (rand < 55) type = 'ANGRY';
-    else if (rand < 75) type = 'VIP';
-    else if (rand < 88) type = 'TROLL';
-    else if (rand < 96) type = 'BOSS';
-    else type = 'CRITIC';
-  }
-  
-  gameState.currentCustomer = CONFIG.CUSTOMER_TYPES[type];
-  
-  UI.customer.className = 'customer ' + gameState.currentCustomer.class;
-  UI.customerType.textContent = gameState.currentCustomer.name;
-  UI.customerType.className = gameState.currentCustomer.color;
-
-  if (type === 'NORMAL') {
-    const randomImg = CONFIG.NORMAL_CUSTOMER_IMAGES[
-      Math.floor(Math.random() * CONFIG.NORMAL_CUSTOMER_IMAGES.length)
-    ];
-    UI.customer.style.backgroundImage = `url("${randomImg}")`;
-  } else {
-    UI.customer.style.backgroundImage = '';
-  }
-  
-  generateOrder();
-  startOrderTimer();
+  if(gameState.isGameOver)return;
+  clearTimeout(gameState.customerTimeout); clearInterval(gameState.orderTimer);
+  UI.timerContainer.classList.remove('timer-warning'); resetKebab();
+  let type; const r=Math.random()*100,d=gameState.difficulty;
+  if(d<2) type=r<80?'NORMAL':'ANGRY';
+  else if(d<4) type=r<60?'NORMAL':(r<85?'ANGRY':'VIP');
+  else if(d<6) type=r<40?'NORMAL':(r<65?'ANGRY':(r<85?'VIP':'TROLL'));
+  else type=r<30?'NORMAL':(r<55?'ANGRY':(r<75?'VIP':(r<90?'TROLL':'BOSS')));
+  gameState.currentCustomer=CONFIG.CUSTOMER_TYPES[type];
+  UI.customerType.textContent=gameState.currentCustomer.name;
+  UI.customerType.className=gameState.currentCustomer.color;
+  UI.customer.innerHTML=buildCharacter(type);
+  gameState.currentOrder=[]; gameState.currentOrderIndex=0;
+  generateOrder(); startOrderTimer();
 }
-
 function generateOrder() {
-  const complexity = getOrderComplexity();
-  
-  // Boss gets +1 item, but not excessive
-  const actualComplexity = gameState.currentCustomer.name === 'BOSS RUSH' 
-    ? Math.min(complexity + 1, 6) 
-    : complexity;
-  
-  gameState.currentOrder = [];
-  gameState.currentOrderIndex = 0;
-  
-  for (let i = 0; i < actualComplexity; i++) {
-    let itemIndex;
-    let attempts = 0;
-    
-    do {
-      itemIndex = Math.floor(Math.random() * CONFIG.ITEMS.length);
-      attempts++;
-    } while (
-      attempts < 10 && // Prevent infinite loops
-      gameState.currentOrder.length > 0 && 
-      gameState.currentOrder[gameState.currentOrder.length - 1] === itemIndex &&
-      Math.random() < 0.7 // 70% chance to avoid consecutive duplicates
-    );
-    
-    gameState.currentOrder.push(itemIndex);
-  }
-  
+  const c=getOrderComplexity(),a=gameState.currentCustomer.name==='BOSS RUSH'?c+1:c;
+  gameState.currentOrder=[]; gameState.currentOrderIndex=0;
+  for(let i=0;i<Math.min(a,6);i++){let idx; do{idx=Math.floor(Math.random()*CONFIG.ITEM_NAMES.length);}while(gameState.currentOrder.length>0&&gameState.currentOrder[gameState.currentOrder.length-1]===idx&&Math.random()<0.7);gameState.currentOrder.push(idx);}
   displayOrder();
 }
-
 function displayOrder() {
-  UI.orderDisplay.innerHTML = '';
-  gameState.currentOrder.forEach((itemIndex, i) => {
-    const span = document.createElement('span');
-    span.className = 'order-item';
-    
-    if (i < gameState.currentOrderIndex) {
-      span.classList.add('completed');
-    } else if (i === gameState.currentOrderIndex) {
-      span.classList.add('current');
-    }
-    
-    span.textContent = CONFIG.ITEMS[itemIndex];
-    UI.orderDisplay.appendChild(span);
-  });
+  UI.orderDisplay.innerHTML='';
+  gameState.currentOrder.forEach((idx,i)=>{const s=document.createElement('span');s.className='order-item';if(i<gameState.currentOrderIndex)s.classList.add('completed');else if(i===gameState.currentOrderIndex)s.classList.add('current');s.textContent=CONFIG.ITEMS[idx].icon+' '+CONFIG.ITEM_NAMES[idx];UI.orderDisplay.appendChild(s);});
 }
-
 function startOrderTimer() {
-  gameState.orderTimeMax = getWaitTime();
-  gameState.orderTimeLeft = gameState.orderTimeMax;
-  
+  gameState.orderTimeMax=getWaitTime(); gameState.orderTimeLeft=gameState.orderTimeMax;
   clearInterval(gameState.orderTimer);
-  gameState.orderTimer = setInterval(() => {
-    if (gameState.isGameOver || gameState.currentOrderIndex >= gameState.currentOrder.length) {
-      clearInterval(gameState.orderTimer);
-      return;
-    }
-    
-    gameState.orderTimeLeft -= 0.05;
-    const percent = Math.max(0, (gameState.orderTimeLeft / gameState.orderTimeMax) * 100);
-    UI.orderTimerBar.style.width = percent + '%';
-    
-    // Warning at 3 seconds remaining
-    if (gameState.orderTimeLeft <= 3 && gameState.orderTimeLeft > 2.95) {
-      UI.timerContainer.classList.add('timer-warning');
-      AudioSystem.warning();
-    }
-    
-    if (gameState.orderTimeLeft <= 0) {
-      orderTimeout();
-    }
-  }, 50);
+  gameState.orderTimer=setInterval(()=>{
+    if(gameState.isGameOver||gameState.currentOrderIndex>=gameState.currentOrder.length){clearInterval(gameState.orderTimer);return;}
+    gameState.orderTimeLeft-=0.05;
+    const pct=gameState.orderTimeLeft/gameState.orderTimeMax;
+    UI.orderTimerBar.style.width=Math.max(0,pct*100)+'%';
+    updateMood(pct);
+    if(gameState.orderTimeLeft<=3){UI.timerContainer.classList.add('timer-warning');if(gameState.orderTimeLeft>2.95)AudioSystem.warning();}
+    if(gameState.orderTimeLeft<=0)orderTimeout();
+  },50);
 }
-
 function orderTimeout() {
-  if (gameState.isGameOver) return;
-  
-  clearInterval(gameState.orderTimer);
-  
-  const penalty = gameState.currentCustomer.penalty || 5;
-  gameState.time -= penalty;
-  gameState.combo = 0; // Reset combo completely on timeout
-  gameState.mistakeCount++;
-  
-  AudioSystem.error();
-  flashScreen('red');
-  showFloatingText(`❌ TROP LENT! -${penalty}s`, '#ff0000');
-  document.body.classList.add('shake');
-  setTimeout(() => document.body.classList.remove('shake'), 350);
-  
+  if(gameState.isGameOver)return;
+  clearInterval(gameState.orderTimer); clearTimeout(gameState.customerTimeout);
+  const p=gameState.currentCustomer.penalty||5;
+  gameState.time-=p; gameState.combo=0; gameState.mistakeCount++;
+  AudioSystem.error(); flashScreen('red');
+  showFloatingText('\u274C TROP LENT! -'+p+'s','#ff0000');
+  document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'),350);
+  spawnParticles(window.innerWidth/2,window.innerHeight*0.4,['#ff0000','#ff4444','#ff6666','#ff8888'],20);
+  updateUI(); if(gameState.time>0)setTimeout(()=>spawnCustomer(),500);
+}
+
+// ==================== SERVING ====================
+function serveItem(idx,el) {
+  if(gameState.isGameOver||gameState.currentOrderIndex>=gameState.currentOrder.length)return;
+  if(gameState.currentCustomer.fake&&Math.random()<0.25){wrongOrder(el);showFloatingText('\uD83E\uDD21 PI\u00C8GE!','#9b59b6');return;}
+  if(idx===gameState.currentOrder[gameState.currentOrderIndex])correctItem(el);
+  else wrongOrder(el);
+}
+function correctItem(el) {
+  const idx=gameState.currentOrder[gameState.currentOrderIndex];
+  gameState.currentOrderIndex++; displayOrder(); addKebabLayer(idx);
+  if(el){el.classList.remove('correct-flash');void el.offsetWidth;el.classList.add('correct-flash');}
+  particlesAtElement(el,['#ffd700','#ffaa00','#fff','#ffee88'],8);
+  if(gameState.currentOrderIndex>=gameState.currentOrder.length)completeOrder();
+  else{AudioSystem.success();flashScreen('green');}
+}
+function wrongOrder(el) {
+  const p=5; gameState.time-=p; gameState.combo=Math.floor(gameState.combo/2); gameState.mistakeCount++;
+  if(gameState.currentCustomer.perfectOnly){gameState.time-=5;showFloatingText('\uD83E\uDD10 INACCEPTABLE!','#ff0000');}
+  if(el){el.classList.remove('wrong-flash');void el.offsetWidth;el.classList.add('wrong-flash');}
+  particlesAtElement(el,['#ff0000','#ff3333','#ff6666','#ff9999'],10);
+  AudioSystem.error();flashScreen('red');
+  showFloatingText('\u274C ERREUR! -'+p+'s','#ff0000');
+  document.body.classList.add('shake');setTimeout(()=>document.body.classList.remove('shake'),350);
   updateUI();
-  
-  if (gameState.time > 0) {
-    setTimeout(() => spawnCustomer(), 500);
-  } else {
-    endGame();
-  }
 }
-
-// ==================== SERVING SYSTEM ====================
-function serveItem(itemIndex) {
-  if (gameState.isGameOver || gameState.currentOrderIndex >= gameState.currentOrder.length) {
-    return;
-  }
-  
-  // Troll customer has 25% chance to trick you
-  if (gameState.currentCustomer.fake && Math.random() < 0.25) {
-    wrongOrder();
-    showFloatingText('🤡 PIÈGE!', '#9b59b6');
-    return;
-  }
-  
-  const expected = gameState.currentOrder[gameState.currentOrderIndex];
-  
-  if (itemIndex === expected) {
-    correctItem();
-  } else {
-    wrongOrder();
-  }
-}
-
-function correctItem() {
-  gameState.currentOrderIndex++;
-  displayOrder();
-  
-  if (gameState.currentOrderIndex >= gameState.currentOrder.length) {
-    completeOrder();
-  } else {
-    AudioSystem.success();
-    flashScreen('green');
-  }
-}
-
-function wrongOrder() {
-  const timePenalty = 4; // Reduced from 5 to 4 seconds
-  gameState.time -= timePenalty;
-  gameState.combo = Math.floor(gameState.combo / 2); // Halve combo instead of reset
-  gameState.mistakeCount++;
-  
-  // Critic penalizes mistakes heavily
-  if (gameState.currentCustomer.perfectOnly) {
-    gameState.time -= 4;
-    showFloatingText('🧐 INACCEPTABLE! -4s', '#ff0000');
-  } else {
-    showFloatingText(`❌ ERREUR! -${timePenalty}s`, '#ff0000');
-  }
-  
-  AudioSystem.error();
-  flashScreen('red');
-  document.body.classList.add('shake');
-  setTimeout(() => document.body.classList.remove('shake'), 350);
-  
-  updateUI();
-  
-  if (gameState.time <= 0) {
-    endGame();
-  }
-}
-
-// ==================== SCORING SYSTEM - FIXED ====================
 function completeOrder() {
-  if (gameState.isGameOver) return;
-  
-  clearInterval(gameState.orderTimer);
+  if(gameState.isGameOver)return;
+  clearInterval(gameState.orderTimer);clearTimeout(gameState.customerTimeout);
   UI.timerContainer.classList.remove('timer-warning');
-  
-  gameState.combo++;
-  gameState.totalOrders++;
-  
-  // Base time reward: 4 seconds per order
-  gameState.time += 4;
-  
-  if (gameState.combo > gameState.maxCombo) {
-    gameState.maxCombo = gameState.combo;
-  }
-  
-  // REALISTIC SCORING SYSTEM
-  // Base score per item: 5 points
-  const baseScore = gameState.currentOrder.length * 5;
-  
-  // Combo bonus: +1 point per combo level (not exponential)
-  const comboBonus = gameState.combo;
-  
-  // Difficulty bonus: +2 points per difficulty level
-  const difficultyBonus = gameState.difficulty * 2;
-  
-  // Speed bonus: +5 points if served in top 70% of time
-  const speedBonus = gameState.orderTimeLeft > gameState.orderTimeMax * 0.7 ? 5 : 0;
-  
-  // Calculate total before multiplier
-  const subtotal = baseScore + comboBonus + difficultyBonus + speedBonus;
-  
-  // Apply customer multiplier (now more balanced: 0.7 to 2.0)
-  const totalScore = Math.floor(subtotal * gameState.currentCustomer.scoreMulti);
-  
-  gameState.score += totalScore;
-  
-  // Speed bonus gives extra time
-  if (speedBonus > 0) {
-    gameState.time += 2;
-    showFloatingText('+6s Rapide! ⚡', '#00ff00');
-  } else {
-    showFloatingText('+4s ⏰', '#00ff00');
-  }
-  
+  gameState.combo++;gameState.totalOrders++;gameState.time+=5;
+  if(gameState.combo>gameState.maxCombo)gameState.maxCombo=gameState.combo;
+  const bs=2,cb=(gameState.currentOrder.length-1)*2,co=Math.floor(gameState.combo/2),db=gameState.difficulty,sb=gameState.orderTimeLeft>gameState.orderTimeMax*0.7?3:0,cub=Math.floor(gameState.currentCustomer.scoreMulti),ts=bs+cb+co+db+sb+cub;
+  gameState.score+=ts;
+  if(sb>0){gameState.time+=2;showFloatingText('+7s Rapide! \u26A1','#00ff00');}else showFloatingText('+5s \u23F0','#00ff00');
   AudioSystem.success();
-  
-  // Combo milestone at every 5 orders
-  if (gameState.combo % 5 === 0 && gameState.combo > 0) {
-    AudioSystem.combo();
-    showFloatingText(`${gameState.combo}x COMBO! 🔥`, '#ffd700');
-    gameState.time += 2; // Reduced from 3 to 2
-  }
-  
-  flashScreen('green');
-  showFloatingText(`+${totalScore} pts`, '#ffd700');
-  
-  // Increase difficulty every 8 orders (more realistic progression)
-  if (gameState.totalOrders % CONFIG.ORDERS_PER_DIFFICULTY === 0 && gameState.totalOrders > 0) {
-    increaseDifficulty();
-  }
-  
-  updateUI();
-  
-  if (!gameState.isGameOver) {
-    setTimeout(() => spawnCustomer(), 350);
-  }
+  spawnParticles(window.innerWidth/2,window.innerHeight*0.4,['#ffd700','#00ff00','#fff','#ffaa00','#00cc44'],25);
+  if(gameState.combo%5===0&&gameState.combo>0){AudioSystem.combo();showFloatingText(gameState.combo+'x COMBO! \uD83D\uDD25','#ffd700');gameState.time+=3;UI.combo.classList.add('combo-fire');setTimeout(()=>UI.combo.classList.remove('combo-fire'),1500);spawnParticles(window.innerWidth/2,window.innerHeight*0.35,['#ff0000','#ffd700','#ff6600','#fff','#ff00ff'],40);}
+  flashScreen('green');showFloatingText('+'+ts+' \uD83D\uDD25','#ffd700');
+  if(gameState.totalOrders%5===0&&gameState.totalOrders>0)increaseDifficulty();
+  updateUI();if(!gameState.isGameOver)setTimeout(()=>spawnCustomer(),350);
 }
 
-// ==================== VISUAL EFFECTS ====================
-function flashScreen(color) {
-  document.body.classList.remove('flash-red', 'flash-green');
-  setTimeout(() => document.body.classList.add(`flash-${color}`), 10);
-  setTimeout(() => document.body.classList.remove(`flash-${color}`), 350);
-}
-
-function showFloatingText(text, color) {
-  const div = document.createElement('div');
-  div.className = 'floating-text';
-  div.style.top = '42%';
-  div.style.left = '50%';
-  div.style.transform = 'translate(-50%, -50%)';
-  div.style.color = color;
-  div.textContent = text;
-  document.body.appendChild(div);
-  setTimeout(() => div.remove(), 1200);
-}
+// ==================== EFFECTS ====================
+function flashScreen(c) { document.body.classList.remove('flash-red','flash-green');setTimeout(()=>document.body.classList.add('flash-'+c),10);setTimeout(()=>document.body.classList.remove('flash-'+c),350); }
+function showFloatingText(t,c) { const d=document.createElement('div');d.className='floating-text';d.style.top='36%';d.style.left='50%';d.style.transform='translate(-50%,-50%)';d.style.color=c;d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1200); }
 
 // ==================== UI UPDATE ====================
 function updateUI() {
-  UI.score.textContent = Math.floor(gameState.score);
-  UI.time.textContent = Math.max(0, Math.floor(gameState.time));
-  UI.combo.textContent = gameState.combo + 'x';
-  
-  const timePercent = (gameState.time / CONFIG.BASE_TIME) * 100;
-  UI.timeBar.style.width = Math.min(100, Math.max(0, timePercent)) + '%';
-  
-  // Warning when time is low
-  if (gameState.time <= 15) {
-    UI.time.parentElement.style.animation = 'shake 0.5s infinite';
-    UI.time.style.color = '#ff3333';
-  } else {
-    UI.time.parentElement.style.animation = '';
-    UI.time.style.color = '#fff';
-  }
+  UI.score.textContent=Math.floor(gameState.score);
+  UI.time.textContent=Math.max(0,Math.floor(gameState.time));
+  UI.combo.textContent=gameState.combo+'x';
+  UI.timeBar.style.width=Math.min(100,Math.max(0,(gameState.time/CONFIG.BASE_TIME)*100))+'%';
+  if(gameState.time<=15){UI.time.parentElement.style.animation='shake 0.5s infinite';UI.time.style.color='#ff3333';}else{UI.time.parentElement.style.animation='';UI.time.style.color='#fff';}
 }
+
+// ==================== TOUCH ====================
+let touchStartX=0;
+document.getElementById('customer-area').addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;},{passive:true});
+document.getElementById('customer-area').addEventListener('touchend',e=>{
+  if(gameState.isGameOver||gameState.currentOrderIndex>=gameState.currentOrder.length)return;
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  if(Math.abs(dx)>40){e.preventDefault();const exp=gameState.currentOrder[gameState.currentOrderIndex];if(dx>0)serveItem((exp-1+CONFIG.ITEM_NAMES.length)%CONFIG.ITEM_NAMES.length);else serveItem((exp+1)%CONFIG.ITEM_NAMES.length);}
+},{passive:false});
 
 // ==================== GAME LOOP ====================
 function startGame() {
-  gameState = {
-    score: 0,
-    time: CONFIG.BASE_TIME,
-    combo: 0,
-    maxCombo: 0,
-    currentOrder: [],
-    currentOrderIndex: 0,
-    currentCustomer: null,
-    orderTimer: null,
-    orderTimeLeft: 0,
-    orderTimeMax: 0,
-    gameTimer: null,
-    totalOrders: 0,
-    mistakeCount: 0,
-    difficulty: 1,
-    isGameOver: false
-  };
-  
-  AudioSystem.init();
-  
-  UI.gameOver.style.display = 'none';
-  document.body.classList.remove('shake', 'flash-red', 'flash-green');
-  
-  setDifficulty(1);
-  updateUI();
-  spawnCustomer();
-  
+  gameState={score:0,time:CONFIG.BASE_TIME,combo:0,maxCombo:0,currentOrder:[],currentOrderIndex:0,currentCustomer:null,orderTimer:null,orderTimeLeft:0,orderTimeMax:0,gameTimer:null,totalOrders:0,mistakeCount:0,difficulty:1,customerTimeout:null,isGameOver:false};
+  AudioSystem.init(); UI.gameOver.style.display='none';
+  document.body.classList.remove('shake','flash-red','flash-green'); UI.combo.classList.remove('combo-fire');
+  createAmbientParticles();
+  setDifficulty(1); updateUI(); spawnCustomer();
   clearInterval(gameState.gameTimer);
-  gameState.gameTimer = setInterval(() => {
-    if (gameState.isGameOver) {
-      clearInterval(gameState.gameTimer);
-      return;
-    }
-    
-    gameState.time -= 0.1;
-    updateUI();
-    
-    if (gameState.time <= 0) {
-      endGame();
-    }
-  }, 100);
+  gameState.gameTimer=setInterval(()=>{if(gameState.isGameOver){clearInterval(gameState.gameTimer);return;}gameState.time-=0.1;updateUI();if(gameState.time<=0)endGame();},100);
 }
-
-function stopGame() {
-  gameState.isGameOver = true;
-  clearInterval(gameState.gameTimer);
-  clearInterval(gameState.orderTimer);
-}
-
+function stopGame() { gameState.isGameOver=true;clearInterval(gameState.gameTimer);clearInterval(gameState.orderTimer);clearTimeout(gameState.customerTimeout); }
 function endGame() {
-  if (gameState.isGameOver) return;
-  
-  gameState.isGameOver = true;
-  
-  clearInterval(gameState.gameTimer);
-  clearInterval(gameState.orderTimer);
-  
-  BestScores.addScore(
-    Math.floor(gameState.score),
-    gameState.difficulty,
-    gameState.totalOrders,
-    gameState.maxCombo
-  );
-  
-  UI.finalScore.textContent = Math.floor(gameState.score);
-  
-  // More realistic score thresholds
-  let msg = '';
-  if (gameState.score >= 500) msg = '🏆 LÉGENDE DE L\'EMPIRE! 🏆';
-  else if (gameState.score >= 350) msg = '🔥 MAÎTRE KABAB! 🔥';
-  else if (gameState.score >= 250) msg = '⭐ SERVICE EXCEPTIONNEL! ⭐';
-  else if (gameState.score >= 150) msg = '👍 BON TRAVAIL! 👍';
-  else if (gameState.score >= 80) msg = '💪 BON EFFORT! 💪';
-  else msg = '🎯 CONTINUE À T\'ENTRAÎNER!';
-  
-  UI.performanceMsg.textContent = msg;
-  
-  // Fixed accuracy calculation (was dividing by 10 instead of 100)
-  const accuracy = gameState.totalOrders > 0 
-    ? Math.floor((gameState.totalOrders / (gameState.totalOrders + gameState.mistakeCount)) * 100)
-    : 0;
-  
-  UI.statsSummary.innerHTML = `
-    <strong>Commandes servies:</strong> ${gameState.totalOrders}<br>
-    <strong>Meilleur combo:</strong> ${gameState.maxCombo}x<br>
-    <strong>Niveau atteint:</strong> ${gameState.difficulty} / ${CONFIG.MAX_DIFFICULTY}<br>
-    <strong>Précision:</strong> ${accuracy}%
-  `;
-  
-  UI.gameOver.style.display = 'block';
+  gameState.isGameOver=true;clearInterval(gameState.gameTimer);clearInterval(gameState.orderTimer);clearTimeout(gameState.customerTimeout);
+  BestScores.addScore(Math.floor(gameState.score),gameState.difficulty,gameState.totalOrders,gameState.maxCombo);
+  UI.finalScore.textContent=Math.floor(gameState.score);
+  let msg='';if(gameState.score>=300)msg='\uD83C\uDFC6 L\u00C9GENDE DU CRISPY! \uD83C\uDFC6';else if(gameState.score>=200)msg='\uD83D\uDD25 MA\u00CETRE KEBAB! \uD83D\uDD25';else if(gameState.score>=150)msg='\u2B50 SERVICE EXCEPTIONNEL! \u2B50';else if(gameState.score>=100)msg='\uD83D\uDC4D BON TRAVAIL! \uD83D\uDC4D';else if(gameState.score>=50)msg='\uD83D\uDCAA BON EFFORT! \uD83D\uDCAA';else msg='\uD83C\uDFAF CONTINUE!';
+  UI.performanceMsg.textContent=msg;
+  const acc=gameState.totalOrders>0?Math.floor((gameState.totalOrders/(gameState.totalOrders+gameState.mistakeCount))*100):0;
+  UI.statsSummary.innerHTML='<strong>Commandes servies:</strong> '+gameState.totalOrders+'<br><strong>Meilleur combo:</strong> '+gameState.maxCombo+'x<br><strong>Difficult\u00E9 atteinte:</strong> '+gameState.difficulty+' / 7<br><strong>Pr\u00E9cision:</strong> '+acc+'%';
+  UI.gameOver.style.display='block'; AudioSystem.unlock();
 }
 
-// ==================== INITIALIZATION ====================
-BestScores.init();
-initMenu();
-
-document.body.addEventListener('click', () => AudioSystem.unlock(), { once: true });
-document.body.addEventListener('touchstart', () => AudioSystem.unlock(), { once: true });
+// ==================== INIT ====================
+BestScores.init(); initMenu();
+document.body.addEventListener('click',()=>AudioSystem.unlock(),{once:true});
+document.body.addEventListener('touchstart',()=>AudioSystem.unlock(),{once:true});
 </script>
-
 </body>
 </html>
